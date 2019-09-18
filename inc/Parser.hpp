@@ -3,18 +3,24 @@
 
 #include "lib.h"
 
+class Mesh;
+
 class Parser {
 public:
     Parser();
     ~Parser();
 
-    void            pars_and_add_to_answer(std::string message);
-    std::string     get_answer_for_cloud();
+	static std::vector<std::string> custom_split(std::string str, std::string delim);
 
-    static std::vector<std::string> pars_setting(std::string setting_str);
-    static std::vector<std::string> pars_answer_apply(std::string str_with_answer);
-private:
-    std::vector<std::string>    _list_str_info;
+	class SSHTunnel {
+	public:
+		static std::string	get_serial_number_from_authorization(std::string data_from_tunnel);
+	};
+
+	class MySQL {
+	public:
+		static std::vector<Mesh>	meshes_info_to_list_mesh(std::string info);
+	};
 
 };
 

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <map>
 #include <cstdarg>
 #include <sys/select.h>
 #include <mutex>
@@ -23,11 +24,22 @@
 #include <curl/curl.h>
 
 
-std::vector<std::string>    custom_split(std::string str, std::string delim);
+// std::vector<std::string>    custom_split(std::string str, std::string delim);
+
+
+enum eRequestType {
+	rd_InfoRequest = 0,
+	rd_BlockRequest,
+	rd_SettingRequest,
+	// rd_NewMeshRequest,
+	// rd_NewRoutersRequest
+};
+
 
 #define PATH_VARIABLE_SETTING "/tmp/new_setting"
 
 // define for comunicate:
+#define BLOCK_DEVICE "Block_device"
 
 #define SERVER_MOD_LOCK "Server_mod_lock"
 #define SERVER_MOD_FREE "Server_mod_free"

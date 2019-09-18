@@ -3,8 +3,6 @@
 
 # include "lib.h"
 
-#define SCRIPT_PATH "../scripts/"
-
 class ScriptExecutor
 {
 public:
@@ -14,6 +12,7 @@ public:
 
     static void     execute(int count, ...);
 
+	static std::string 	PathToScript;
 
     class getOutput
     {

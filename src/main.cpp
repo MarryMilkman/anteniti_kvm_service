@@ -1,32 +1,36 @@
 #include "lib.h"
-#include "Client.hpp"
-
-
-std::vector<std::string> custom_split(std::string str, std::string delim) {
-	int 						i;
-	std::vector<std::string>	r_list;
-	std::string 				prom_str;
-
-	while (str.size()) {
-		i = str.find(delim);
-		if (i < 0) {
-			if (!str.empty())
-			r_list.push_back(str);
-			break;
-		}
-		str[i] = 0;
-		r_list.push_back(str.c_str());
-		str = (str.c_str() + i + delim.size());
-	}
-	return r_list;
-}
+#include "controllers/MySQLController.hpp"
+#include "controllers/MeshController.hpp"
+#include "observers/BlockingObserver.hpp"
+#include "observers/SettingObserver.hpp"
+#include "observers/InfoObserver.hpp"
 
 int main() {
-	while (1) {
-		try {
-			Client("0.0.0.0", 1);
-		}
-		catch (std::exception &e) {}
-	}
+	signal(SIGPIPE, SIG_IGN);
+
+		// MySQLController init
+	MySQLController::getInstance();
+		// MeshController init
+	MeshController::getInstance();
+		// BlockingObserver init
+	BlockingObserver	&_bloching_observer = BlockingObserver::getInstance();
+		// SettingObserver init
+	SettingObserver 	&_setting_observer = SettingObserver::getInstance();
+		// InfoObserver init
+	InfoObserver		&_info_observer = InfoObserver::getInstance();
+
+	// std::thread 	thread_mesh_controller(std::ref(_mesh_controller));
+	std::thread 	thread_bloching_observer(std::ref(_bloching_observer));
+	std::thread 	thread_setting_observer(std::ref(_setting_observer));
+	std::thread 	thread_info_observer(std::ref(_info_observer));
+
+	// if (thread_mesh_controller.joinable())
+	// 	thread_mesh_controller.join();
+	if (thread_bloching_observer.joinable())
+		thread_bloching_observer.join();
+	if (thread_setting_observer.joinable())
+		thread_setting_observer.join();
+	if (thread_info_observer.joinable())
+		thread_info_observer.join();
 	return 0;
 }
