@@ -9,7 +9,7 @@ Request::~Request() {
 		this->task_ptr->status = eTaskStatus::ts_Used;
 }
 
-Request::Request(MySQLDataSegment *mysql_data_segment)
+Request::Request(std::shared_ptr<MySQLDataSegment> 	mysql_data_segment)
 {
 	this->mysql_data = mysql_data_segment;
 	this->task_ptr = 0;

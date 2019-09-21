@@ -21,18 +21,17 @@
 #include <thread>
 #include <chrono>
 
-#include <curl/curl.h>
-
+//#include <curl/curl.h>
 
 // std::vector<std::string>    custom_split(std::string str, std::string delim);
 
 
 enum eRequestType {
-	rd_InfoRequest = 0,
-	rd_BlockRequest,
-	rd_SettingRequest,
-	// rd_NewMeshRequest,
-	// rd_NewRoutersRequest
+	rt_InfoRequest = 0,
+	rt_BlockRequest,
+	rt_SettingRequest,
+	// rt_NewMeshRequest,
+	// rt_NewRoutersRequest
 };
 
 

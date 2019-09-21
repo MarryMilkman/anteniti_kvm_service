@@ -3,6 +3,7 @@
 
 # include "lib.h"
 # include "IObserver.hpp"
+# include "Loger.hpp"
 
 class SettingObserver : public IObserver {
 	SettingObserver();
@@ -14,6 +15,7 @@ public:
 
 	void 	operator()() override;
 private:
+	Loger 	_loger;
 	void	_execute_list_request() override;
 };
 

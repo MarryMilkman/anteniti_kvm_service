@@ -19,18 +19,20 @@ int main() {
 		// InfoObserver init
 	InfoObserver		&_info_observer = InfoObserver::getInstance();
 
-	// std::thread 	thread_mesh_controller(std::ref(_mesh_controller));
 	std::thread 	thread_bloching_observer(std::ref(_bloching_observer));
 	std::thread 	thread_setting_observer(std::ref(_setting_observer));
 	std::thread 	thread_info_observer(std::ref(_info_observer));
 
-	// if (thread_mesh_controller.joinable())
-	// 	thread_mesh_controller.join();
-	if (thread_bloching_observer.joinable())
-		thread_bloching_observer.join();
+	std::cerr << "start join....\n";
+	//
 	if (thread_setting_observer.joinable())
 		thread_setting_observer.join();
+
+	if (thread_bloching_observer.joinable())
+		thread_bloching_observer.join();
+	//
 	if (thread_info_observer.joinable())
 		thread_info_observer.join();
+
 	return 0;
 }

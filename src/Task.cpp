@@ -32,14 +32,18 @@ Task &Task::operator=(Task const & ref) {
 
 
 void 		Task::operator()() {
+	std::cerr << "WI DO TASK!!!!!!!!!!!!!!!!!!!!\n";
 	this->status = ts_InProgres;
 	try {
 		if (!this->tcp_ip)
 			throw std::exception();
+		std::cerr << "TCP_IP was FIND????????????????!!!!!!!!!!!!!!!!!!\n";
 		this->tcp_ip->custom_write(message);
-		this->answer_message += this->tcp_ip->custom_read();
+		// this->answer_message += this->tcp_ip->custom_read();
+		// std::cerr << this->answer_message << "*******************\n";
 	} catch (std::exception &e) {
 		this->answer_message = TASK_FAIL_BROKEN_TCP_IP;
 	}
 	this->status = ts_Finish;
+	std::cerr << "TAsk FINISH!\n";
 }

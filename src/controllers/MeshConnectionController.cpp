@@ -31,27 +31,32 @@ TCP_IP 	*MeshConnectionController::find_connection(std::vector<std::string> &ser
 		std::string		serial_number;
 
 		try {
-			tcp_ip->custom_connect("0.0.0.0", port);
+			tcp_ip->custom_connect("127.0.0.1", port);
 			data_from_tunnel = tcp_ip->custom_read();
 			serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
+			std::cerr << serial_number << "\n";
 		} catch (std::exception &e) {
+			std::cerr << "ASHIBKA!\n";
 			tcp_ip->custom_disconnect();
 			continue;
 		}
+		std::cerr << serial_number << " data from tunnel.........\n";
 		for (std::string sn_mesh : serial_numbers_of_mesh) {
 			if (sn_mesh == serial_number) {
 				return tcp_ip;
 			}
 		}
 		tcp_ip->custom_disconnect();
-		tcp_ip->fresh();
+		// tcp_ip->fresh();
 	}
+	std::cerr << "delete tcp_ip\n";
 	delete tcp_ip;
 	return 0;
 }
 
 std::vector<int>	MeshConnectionController::_get_active_port() const {
-	std::string 				str_with_port = ScriptExecutor::getOutput::execute(1, ScriptExecutor::PathToScript + "detect_open_ssh_tunnel_port");
+	std::string 				path_to_script = ScriptExecutor::PathToScript + "detect_open_ssh_tunnel_port.sh";
+	std::string 				str_with_port = ScriptExecutor::getOutput::execute(path_to_script);
 	std::vector<std::string> 	list_port = Parser::custom_split(str_with_port, "\n");
 	std::vector<int> 			int_list_port;
 

@@ -2,10 +2,12 @@
 
 TCP_IP::TCP_IP() {
 	this->_socket = 0;
+	std::cerr << "hi\n";
 	this->fresh();
 }
 
 TCP_IP::~TCP_IP() {
+	std::cerr << "hmm!!!!!!!!!!!!!!!!!!!!!!!!!!!!mmmmm\n";
 	this->fresh();
 }
 
@@ -20,6 +22,7 @@ TCP_IP	&TCP_IP::operator=(TCP_IP const & ref) {
 
 	// connect
 void 		TCP_IP::custom_connect(std::string ip, int port) {
+	std::cerr << "....................connect.......................\n";
 	this->_init(ip, port);
 	fd_set          readfds;
     struct timeval  timeout;
@@ -38,23 +41,28 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
 
 	// read
 std::string	TCP_IP::custom_read() {
-	char	    buffer[64];
+	std::cerr << "..................read.........................\n";
+
+	char	    buffer[124];
     std::string message;
     int         byts;
 
-	while ((byts = recv(this->_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
-        buffer[byts] = 0;;
-        message += buffer;
-        buffer[0] = 0;
-    }
-    // shutdown(this->_socket, 0);
+	byts = read(this->_socket, buffer, sizeof(buffer) - 1);
 	if (byts < 0)
 		throw std::exception();
+    buffer[byts] = 0;
+    message = buffer;
+    // shutdown(this->_socket, 0);
+	// shutdown(this->_socket, 0);
 	return message;
 }
 
 	// write
 void 		TCP_IP::custom_write(std::string message) {
+	std::cerr << "..........write..............\n";
+
+	message += ".";
+
 	int 		byts;
     const char	*buff;
     int         size = 0;
@@ -70,13 +78,17 @@ void 		TCP_IP::custom_write(std::string message) {
 		size -= byts;
 		buff += byts;
     }
-	if (byts < 0)
+	if (byts < 0) {
+		std::cerr << "HUETA!\n";
 		throw std::exception();
-    // shutdown(this->_socket, 1);
+	}
+    shutdown(this->_socket, 1);
 }
 
 	// disconnect
 void 		TCP_IP::custom_disconnect() {
+	std::cerr << "........disconnect........\n";
+
 	if (this->_socket > 0)
 		close(this->_socket);
 	this->_socket = 0;
@@ -85,6 +97,8 @@ void 		TCP_IP::custom_disconnect() {
 
 void 		TCP_IP::_init(std::string ip, int port) {
 	int     opt = 1;
+
+	std::cerr << ".........init............\n";
 
 	if (this->_socket > 0) {
 		close(this->_socket);
@@ -101,6 +115,9 @@ void 		TCP_IP::_init(std::string ip, int port) {
 
 	// fresh()
 void 		TCP_IP::fresh() {
+
+	std::cerr << "......fresh..............\n";
+
 	if (this->_socket)
 		close (this->_socket);
 	this->_socket = 0;

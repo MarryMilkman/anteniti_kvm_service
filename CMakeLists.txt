@@ -4,21 +4,30 @@ project(MyProject)
 
 add_subdirectory(curl-7.65.3)
 
-link_libraries(libcurl)
+set(MYSQL_CONCPP_DIR "/home/user/Public/anteniti_kcm_service/mysql-connector-cpp-8.0.17")
+
+link_libraries(libcurl ${MYSQL_CONCPP_DIR}/lib64/libmysqlcppconn.so)
+
+set(PROJECT_LINK_LIBS
+	libmysqlcppconn.so)
+
+add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 
 include_directories (
 	./inc
+	${MYSQL_CONCPP_DIR}/include
+	${MYSQL_CONCPP_DIR}/include/jdbc
 )
 
 set(SRC_DIRECTORY "./src")
 
 SET(CMAKE_CXX_COMPILER g++-5)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11 -Wall -Wextra -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -g")
 
 
 set(SRC
-		#${SRC_DIRECTORY}/Client.cpp
+		${SRC_DIRECTORY}/Loger.cpp
 		${SRC_DIRECTORY}/Parser.cpp
 		${SRC_DIRECTORY}/ScriptExecutor.cpp
 		${SRC_DIRECTORY}/MySQLDataSegment.cpp

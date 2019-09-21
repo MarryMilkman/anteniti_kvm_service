@@ -1,6 +1,5 @@
 #include "controllers/TaskController.hpp"
 
-int 	TaskController::_max_task = 60;
 
 TaskController::TaskController() {
 
@@ -17,14 +16,16 @@ TaskController	&TaskController::getInstance() {
 }
 
 std::shared_ptr<Task>	TaskController::make_new_task(std::string title, TCP_IP *tcp_ip, std::string message) {
-	int 		i;
+	int 		i = 0;
 
 	// this->_refresh_pull();
-	while (i < TaskController::_max_task) {
+	while (i < MAX_TASK) {
 		if (!this->_pull_task[i].task_ptr || this->_pull_task[i].task_ptr->status == eTaskStatus::ts_Used) {
 			this->_pull_task[i] = TaskController::CustomThread();
 			this->_pull_task[i].task_ptr = std::shared_ptr<Task>(new Task(title, tcp_ip, message));
-			this->_pull_task[i].thread_ = std::thread(std::ref(*this->_pull_task[i].task_ptr));
+			this->_pull_task[i].thread_ = std::thread(std::ref(*this->_pull_task[i].task_ptr.get()));
+			this->_pull_task[i].thread_.detach();
+			std::cerr << "TsakController return " << i << " thread from puul\n";
 			return this->_pull_task[i].task_ptr;
 		}
 		i++;

@@ -18,7 +18,6 @@ class TaskController {
 		CustomThread &operator=(CustomThread const &ref);
 		~CustomThread();
 	};
-	static int		_max_task;
 
 	TaskController();
 public:

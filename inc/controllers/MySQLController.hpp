@@ -2,6 +2,14 @@
 # define MY_SQL_CONTROLLER
 
 # include "lib.h"
+# include "Loger.hpp"
+
+#define MYSQL_CONFIG "../mysql_config.txt"
+
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 
 class MySQLDataSegment;
 
@@ -20,16 +28,36 @@ public:
 	MySQLController operator=(MySQLController const & ref) = delete;
 	static MySQLController	&getInstance();
 
-	std::string 				get_meshes_info_by_imei(std::string imei);
-	std::vector<MySQLDataSegment *>	get_request(eRequestType type_request);
-	bool 						story(MySQLDataSegment *data_segment);
+	std::string 									get_meshes_info_by_imei(std::string imei);
+	std::vector<std::shared_ptr<MySQLDataSegment>>	get_request(eRequestType type_request);
+	bool 											story(std::shared_ptr<MySQLDataSegment> data_segment);
 
 private:
-	std::mutex 					_mutex;
+	sql::Driver				*_driver;
+	sql::Connection 		*_connector;
+	sql::Statement			*_statement;
 
-	std::vector<MySQLDataSegment *>	_get_request_info();
-	std::vector<MySQLDataSegment *>	_get_request_block();
-	std::vector<MySQLDataSegment *>	_get_request_setting();
+	std::string 			_url;
+	std::string 			_user;
+	std::string 			_pass;
+	std::string 			_name_db;
+
+	// mysqlx::Session 		*_session;
+	Loger 					_loger;
+	std::mutex 				_mutex;
+	std::mutex 				_mutex_for_execute;
+
+	void 							_init_connection();
+	bool							_update_all_list(eRequestType question);
+
+
+	std::vector<std::shared_ptr<MySQLDataSegment>>	_get_request_info();
+	std::vector<std::shared_ptr<MySQLDataSegment>>	_get_request_block();
+	std::vector<std::shared_ptr<MySQLDataSegment>>	_get_request_setting();
+
+	std::vector<std::shared_ptr<MySQLDataSegment>> _list_request_info;
+	std::vector<std::shared_ptr<MySQLDataSegment>> _list_request_block;
+	std::vector<std::shared_ptr<MySQLDataSegment>> _list_request_setting;
 };
 
 #endif

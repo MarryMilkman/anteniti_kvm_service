@@ -6,8 +6,9 @@ Mesh::Mesh() {
 }
 
 Mesh::~Mesh() {
-	if (this->tcp_ip)
-		delete this->tcp_ip;
+	std::cerr << "DEstr mesh\n";
+	// if (this->tcp_ip)
+	this->tcp_ip = 0;
 }
 
 Mesh::Mesh(Mesh const & ref) {

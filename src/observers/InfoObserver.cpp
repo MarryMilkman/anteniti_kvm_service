@@ -5,7 +5,9 @@
 #include "Request.hpp"
 #include "Mesh.hpp"
 
-InfoObserver::InfoObserver(){
+InfoObserver::InfoObserver() :
+	_loger("../logs/info_observer.logs")
+{
 }
 
 InfoObserver::~InfoObserver() {
@@ -25,9 +27,9 @@ void 	InfoObserver::operator()() {
 }
 
 void 	InfoObserver::_execute_list_request() {
-	this->_refresh_untreated_list_request(eRequestType::rd_InfoRequest);
+	this->_refresh_untreated_list_request(eRequestType::rt_InfoRequest);
 
-	for (Request request : this->_list_untreated_request) {
+	for (Request &request : this->_list_untreated_request) {
 		if (request.task_ptr)
 			continue;
 		try {
@@ -38,7 +40,7 @@ void 	InfoObserver::_execute_list_request() {
 					std::string 	message = SEND_INFO;
 
 					message += std::string("\n***DELIM***\n") + std::string("...");
-					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip.get(), message);
 					break;
 				}
 				catch (std::exception &ref){

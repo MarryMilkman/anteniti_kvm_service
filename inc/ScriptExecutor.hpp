@@ -10,7 +10,7 @@ public:
 
     static void     sendSelfInfo(std::string serrial_number, std::string ip);
 
-    static void     execute(int count, ...);
+    static void     execute(std::string script);
 
 	static std::string 	PathToScript;
 
@@ -18,7 +18,7 @@ public:
     {
     public:
         static std::string  checkWAN();
-        static std::string  execute(int count, ...);
+        static std::string  execute(std::string script);
     };
 };
 

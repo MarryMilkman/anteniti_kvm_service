@@ -15,7 +15,7 @@ public:
 	std::string 				imei;
 	std::string 				name;
 	std::vector<std::string>	list_serial_number;
-	TCP_IP 						*tcp_ip;
+	std::shared_ptr<TCP_IP>		tcp_ip;
 	// std::vector<std::string> 	&get_serial_numbers() const;
 	// void 						add_serial_number(std::string serial_number);
 

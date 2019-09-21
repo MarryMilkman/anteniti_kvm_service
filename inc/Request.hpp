@@ -12,14 +12,14 @@ class Request {
 public:
 	Request() = delete;
 
-	Request(MySQLDataSegment *mysql_data);
+	Request(std::shared_ptr<MySQLDataSegment> mysql_data);
 	~Request();
 	Request(Request const &ref);
 	Request	&operator=(Request const &ref);
 
-	MySQLDataSegment 		*mysql_data;
-	std::shared_ptr<Task>	task_ptr;
-	int 					number_check;
+	std::shared_ptr<MySQLDataSegment>	mysql_data;
+	std::shared_ptr<Task>				task_ptr;
+	int 								number_check;
 
 	// RequestForInformation {
 	// 	this->task = 0;

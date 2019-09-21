@@ -21,16 +21,7 @@ void    ScriptExecutor::sendSelfInfo(
     ip = ip;
 }
 
-void     ScriptExecutor::execute(int count, ...) {
-    va_list         args;
-    std::string     script;
-
-    va_start(args, count);
-    while (count--) {
-        script += va_arg(args, char *);
-        script += " ";
-    }
-
+void     ScriptExecutor::execute(std::string script) {
     system(script.c_str());
 }
 
@@ -50,17 +41,7 @@ std::string ScriptExecutor::getOutput::checkWAN() {
     return line;
 }
 
-std::string ScriptExecutor::getOutput::execute(int count, ...) {
-    va_list         args;
-    std::string     script;
-
-    va_start(args, count);
-    while (count--) {
-        script += va_arg(args, char *);
-        script += " ";
-    }
-
-
+std::string ScriptExecutor::getOutput::execute(std::string script) {
     std::string     line;
     char            buff[64];
     FILE            *pipe;
@@ -72,4 +53,4 @@ std::string ScriptExecutor::getOutput::execute(int count, ...) {
     return line;
 }
 
-std::string 	ScriptExecutor::PathToScript = "../scripts/";
+std::string 	ScriptExecutor::PathToScript = "/home/user/Public/anteniti_kcm_service/scripts/";
