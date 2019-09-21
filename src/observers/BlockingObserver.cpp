@@ -37,9 +37,10 @@ void 	BlockingObserver::_execute_list_request() {
 			while (1) {
 				try {
 					std::string 	title = mesh.list_serial_number[0] + " block devices";
-					std::string 	message = BLOCK_DEVICE;
+					std::string 	message;
 
-					message += "\n***DELIM***\n";
+					message = std::string("Command") + std::string("\n***DELIM***\n");
+					message += BLOCK_DEVICE;
 					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
 					break;
 				}

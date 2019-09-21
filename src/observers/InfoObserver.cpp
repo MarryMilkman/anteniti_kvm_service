@@ -37,9 +37,10 @@ void 	InfoObserver::_execute_list_request() {
 			while (1) {
 				try {
 					std::string 	title = mesh.list_serial_number[0] + " get info";
-					std::string 	message = SEND_INFO;
+					std::string 	message;
 
-					message += std::string("\n***DELIM***\n") + std::string("...");
+					message = std::string("Command") + std::string("\n***DELIM***\n");
+					message += SEND_INFO;
 					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
 					break;
 				}

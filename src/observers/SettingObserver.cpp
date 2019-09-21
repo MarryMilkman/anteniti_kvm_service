@@ -37,9 +37,10 @@ void 	SettingObserver::_execute_list_request() {
 			while (1) {
 				try {
 					std::string 	title = mesh.list_serial_number[0] + " setting change";
-					std::string 	message = SETTING_CHENGED;
+					std::string 	message;
 
-					message += "\n***DELIM***\n";
+					message = std::string("Command") + std::string("\n***DELIM***\n");
+					message += SETTING_CHANGED;
 					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
 					break;
 				}
