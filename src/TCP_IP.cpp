@@ -82,7 +82,7 @@ void 		TCP_IP::custom_write(std::string message) {
 		std::cerr << "HUETA!\n";
 		throw std::exception();
 	}
-    shutdown(this->_socket, 1);
+    // shutdown(this->_socket, 1);
 }
 
 	// disconnect

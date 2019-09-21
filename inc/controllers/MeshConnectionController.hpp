@@ -22,7 +22,7 @@ public:
 
 		// for SSHTunnelDataController
 		// SSHTunnelData 	&get_SSHTunnelData_by_sn(std::string serial_number) const;
-	TCP_IP 		*find_connection(std::vector<std::string> &serial_numbers_of_mesh);
+	std::shared_ptr<TCP_IP>	find_connection(std::vector<std::string> &serial_numbers_of_mesh);
 
 private:
 

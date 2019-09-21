@@ -1,23 +1,26 @@
 #include "Task.hpp"
 #include "TCP_IP.hpp"
 
-Task::Task(std::string title, TCP_IP *tcp_ip, std::string message) {
+Task::Task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message) :
+	tcp_ip(tcp_ip)
+{
 	this->title = title;
-	this->tcp_ip = tcp_ip;
 	this->message = message;
 	this->status = eTaskStatus::ts_Created;
 }
 
-Task::Task() {
-	this->tcp_ip = 0;
-	this->status = eTaskStatus::ts_Created;
-}
+// Task::Task() :
+// 	tcp_ip(0)
+// {
+// 	this->status = eTaskStatus::ts_Created;
+// }
 
 Task::~Task() {
-
 }
 
-Task::Task(Task const & ref) {
+Task::Task(Task const & ref) :
+	tcp_ip(ref.tcp_ip)
+{
 	*this = ref;
 }
 
@@ -42,6 +45,7 @@ void 		Task::operator()() {
 		this->answer_message += this->tcp_ip->custom_read();
 		// std::cerr << this->answer_message << "*******************\n";
 	} catch (std::exception &e) {
+		this->tcp_ip = 0;
 		this->answer_message = TASK_FAIL_BROKEN_TCP_IP;
 	}
 	this->status = ts_Finish;

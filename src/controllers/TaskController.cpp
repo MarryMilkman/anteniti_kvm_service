@@ -15,7 +15,7 @@ TaskController	&TaskController::getInstance() {
 	return _task_controller;
 }
 
-std::shared_ptr<Task>	TaskController::make_new_task(std::string title, TCP_IP *tcp_ip, std::string message) {
+std::shared_ptr<Task>	TaskController::make_new_task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message) {
 	int 		i = 0;
 
 	// this->_refresh_pull();

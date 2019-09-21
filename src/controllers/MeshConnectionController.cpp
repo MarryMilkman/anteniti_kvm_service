@@ -19,12 +19,12 @@ MeshConnectionController	&MeshConnectionController::getInstance() {
 }
 
 // check open port and compare data from tunnel with std::vector; stroy if find equal
-TCP_IP 	*MeshConnectionController::find_connection(std::vector<std::string> &serial_numbers_of_mesh) {
+std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<std::string> &serial_numbers_of_mesh) {
 	if (!serial_numbers_of_mesh.size())
 		return 0;
 
-	std::vector<int> 	active_port = this->_get_active_port();
-	TCP_IP 		*tcp_ip = new TCP_IP;
+	std::vector<int> 		active_port = this->_get_active_port();
+	std::shared_ptr<TCP_IP> tcp_ip(new TCP_IP);
 
 	for (int port : active_port) {
 		std::string 	data_from_tunnel;
@@ -49,8 +49,7 @@ TCP_IP 	*MeshConnectionController::find_connection(std::vector<std::string> &ser
 		tcp_ip->custom_disconnect();
 		// tcp_ip->fresh();
 	}
-	std::cerr << "delete tcp_ip\n";
-	delete tcp_ip;
+	tcp_ip = 0;
 	return 0;
 }
 
