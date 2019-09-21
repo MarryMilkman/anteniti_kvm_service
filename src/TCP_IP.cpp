@@ -60,9 +60,7 @@ std::string	TCP_IP::custom_read() {
 	// write
 void 		TCP_IP::custom_write(std::string message) {
 	std::cerr << "..........write..............\n";
-
-	message += ".";
-
+	
 	int 		byts;
     const char	*buff;
     int         size = 0;
