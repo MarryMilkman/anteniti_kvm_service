@@ -53,4 +53,4 @@ std::string ScriptExecutor::getOutput::execute(std::string script) {
     return line;
 }
 
-std::string 	ScriptExecutor::PathToScript = "/home/user/Public/anteniti_kcm_service/scripts/";
+std::string 	ScriptExecutor::PathToScript = "../scripts/";

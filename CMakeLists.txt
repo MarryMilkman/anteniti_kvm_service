@@ -4,7 +4,7 @@ project(MyProject)
 
 add_subdirectory(curl-7.65.3)
 
-set(MYSQL_CONCPP_DIR "/home/user/Public/anteniti_kcm_service/mysql-connector-cpp-8.0.17")
+set(MYSQL_CONCPP_DIR "/home/user/Public/anteniti_kvm_service/mysql-connector-cpp-8.0.17")
 
 link_libraries(libcurl ${MYSQL_CONCPP_DIR}/lib64/libmysqlcppconn.so)
 
