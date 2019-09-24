@@ -20,6 +20,7 @@ MeshConnectionController	&MeshConnectionController::getInstance() {
 
 // check open port and compare data from tunnel with std::vector; stroy if find equal
 std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<std::string> &serial_numbers_of_mesh) {
+	std::cerr << "mesh_connection_controller.find_connection\n";
 	if (!serial_numbers_of_mesh.size())
 		return 0;
 

@@ -16,6 +16,7 @@ public:
 	std::string 				name;
 	std::vector<std::string>	list_serial_number;
 	std::shared_ptr<TCP_IP>		tcp_ip;
+	std::mutex 					refresh_connection_mutex;
 	// std::vector<std::string> 	&get_serial_numbers() const;
 	// void 						add_serial_number(std::string serial_number);
 

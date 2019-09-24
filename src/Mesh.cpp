@@ -2,11 +2,11 @@
 #include "TCP_IP.hpp"
 
 Mesh::Mesh() {
+	std::cerr << "Create new MESH!\n";
 	this->tcp_ip = 0;
 }
 
 Mesh::~Mesh() {
-	std::cerr << "DEstr mesh\n";
 	// if (this->tcp_ip)
 	this->tcp_ip = 0;
 }

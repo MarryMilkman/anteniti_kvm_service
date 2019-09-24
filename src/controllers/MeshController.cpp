@@ -22,6 +22,7 @@ MeshController 	&MeshController::getInstance() {
 }
 
 Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
+	std::cerr << "NEED MESH!\n";
 	for (Mesh &mesh : this->_map_mesh[imei])
 		if (mesh.name == name_mesh) {
 			if (!mesh.tcp_ip)
@@ -29,7 +30,18 @@ Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 			return mesh;
 		}
 		// need_realiz
-	this->_registered_new_mesh(imei);
+	if (!_map_mutex.count(imei)) {
+		_map_mutex[imei] = std::shared_ptr<std::mutex>(new std::mutex());
+	}
+
+	{
+		std::unique_lock<std::mutex> 	ulock(*this->_map_mutex[imei], std::try_to_lock);
+
+		if (ulock.owns_lock())
+			this->_registered_new_mesh(imei);
+		else
+			std::lock_guard<std::mutex>		lock(*this->_map_mutex[imei]);
+	}
 	for (Mesh &mesh : this->_map_mesh[imei])
 		if (mesh.name == name_mesh)
 			return mesh;
@@ -48,9 +60,16 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 
 void 		MeshController::refresh_connection(Mesh &mesh) {
 	std::cerr << "refresh_connection\n";
+	std::unique_lock<std::mutex> lock(mesh.refresh_connection_mutex, std::try_to_lock);
+
+	if (!lock.owns_lock()) {
+		std::lock_guard<std::mutex> llock(mesh.refresh_connection_mutex);
+		return ;
+	}
 	if (mesh.tcp_ip) {
 		std::cerr << "detete tcp_ip in mesh\n";
 		mesh.tcp_ip = 0;
 	}
+	std::cerr << "salom\n";
 	mesh.tcp_ip = std::shared_ptr<TCP_IP>(this->_mesh_connection_controller.find_connection(mesh.list_serial_number));
 }

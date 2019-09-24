@@ -1,12 +1,16 @@
 #include "Task.hpp"
 #include "TCP_IP.hpp"
 
-Task::Task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message) :
+Task::Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string message) :
 	tcp_ip(tcp_ip)
 {
 	this->title = title;
 	this->message = message;
 	this->status = eTaskStatus::ts_Created;
+	// std::stringstream 	print_ss;
+	//
+	//  print_ss << "created task: " << this << "\n";
+	//  std::cerr << print_ss.str();
 }
 
 // Task::Task() :
@@ -16,6 +20,11 @@ Task::Task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string messa
 // }
 
 Task::~Task() {
+	// std::stringstream 	ss_error_log;
+	//
+	// ss_error_log << "remove tesk: " << this << "\n";
+	// std::cerr << ss_error_log.str();
+	this->tcp_ip = 0;
 }
 
 Task::Task(Task const & ref) :
@@ -35,17 +44,23 @@ Task &Task::operator=(Task const & ref) {
 
 
 void 		Task::operator()() {
-	std::cerr << "start do task\n";
+	std::cerr << "TASK START!\n";
 	this->status = ts_InProgres;
 	try {
 		if (!this->tcp_ip)
 			throw std::exception();
+		std::lock_guard<std::mutex>	lock(this->tcp_ip->s_mutex);
+		// std::cerr << "start do task, memory addr tcp_ip:" << this->tcp_ip << ", title:" << title << "\n";
+
 		std::cerr << "tcp was find\n";
+		// std::cerr << this->tcp_ip << " ==8\n";
 		this->tcp_ip->custom_write(message);
-		this->answer_message += this->tcp_ip->custom_read();
+		// std::cerr << this->tcp_ip << " ==8\n";
+		this->answer_message = this->tcp_ip->custom_read();
 		// std::cerr << this->answer_message << "*******************\n";
 	} catch (std::exception &e) {
 		this->tcp_ip = 0;
+		std::cerr << "TASK_FAIL_BROKEN_TCP_IP\n";
 		this->answer_message = TASK_FAIL_BROKEN_TCP_IP;
 	}
 	this->status = ts_Finish;

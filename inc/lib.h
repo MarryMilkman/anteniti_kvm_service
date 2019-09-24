@@ -20,6 +20,7 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
+#include <fcntl.h>
 
 //#include <curl/curl.h>
 
@@ -38,6 +39,8 @@ enum eRequestType {
 #define PATH_VARIABLE_SETTING "/tmp/new_setting"
 
 // define for comunicate:
+#define CAN_NOT_FIND_MESH "Can_not_find_mesh"
+
 #define BLOCK_DEVICE "Block_device"
 
 #define SERVER_MOD_LOCK "Server_mod_lock"
@@ -46,7 +49,7 @@ enum eRequestType {
 #define SEND_INFO "Send_info"
 #define SEND_SETTING_VERSION "Send_setting_version"
 
-#define SETTING_CHANGED "Setting_changed"
+# define SETTING_CHANGED "Setting_changed"
 
 #define SETTING_DELIVERED "Setting_delivered"
 #define SETTING_NOT_DELIVERED "Setting_not_delivered"

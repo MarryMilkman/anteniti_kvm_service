@@ -16,7 +16,7 @@ enum 	eTaskStatus {
 
 class Task {
 public:
-	Task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message);
+	Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string message);
 	Task() = delete;
 	~Task();
 	Task(Task const & ref);
@@ -26,7 +26,7 @@ public:
 
 	std::string 			title;
 	std::string 			message;
-	std::shared_ptr<TCP_IP>	&tcp_ip;
+	std::shared_ptr<TCP_IP>	tcp_ip;
 	eTaskStatus 			status;
 	std::string 			answer_message;
 private:

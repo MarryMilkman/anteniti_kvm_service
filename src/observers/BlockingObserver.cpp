@@ -27,8 +27,8 @@ void 	BlockingObserver::operator()() {
 }
 
 void 	BlockingObserver::_execute_list_request() {
-	this->_refresh_untreated_list_request(eRequestType::rt_BlockRequest);
-
+	if (!this->_list_untreated_request.size())
+		this->_refresh_untreated_list_request(eRequestType::rt_BlockRequest);
 	for (Request &request : this->_list_untreated_request) {
 		if (request.task_ptr)
 			continue;

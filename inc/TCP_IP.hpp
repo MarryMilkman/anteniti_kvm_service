@@ -18,6 +18,8 @@ public:
 	int 		get_socket() const;
 	void 		fresh();
 
+	std::mutex 		s_mutex;
+
 private:
 	int 				_socket;
 	struct sockaddr_in	_addres;

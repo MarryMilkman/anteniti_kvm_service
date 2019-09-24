@@ -22,7 +22,7 @@ IObserver::~IObserver() {
 void 		IObserver::_refresh_untreated_list_request(eRequestType type_request) {
 	std::vector<std::shared_ptr<MySQLDataSegment>> 	list_mysql_data = this->_mysql_controller.get_request(type_request);
 
-	for (std::shared_ptr<MySQLDataSegment>	mysql_data : list_mysql_data) {
+	for (std::shared_ptr<MySQLDataSegment>	&mysql_data : list_mysql_data) {
 		if (mysql_data->status == eRequestStatus::rs_NotProcessed) {
 			mysql_data->status = eRequestStatus::rs_InProgress;
 			this->_list_untreated_request.push_back(Request(mysql_data));
@@ -42,14 +42,40 @@ void 	IObserver::_check_untreated_list_request() {
 		request.number_check++;
 		if (!request.task_ptr) {
 			i++;
+			std::cerr << "-----------------------------------ATANTION!---------------------\n";
+			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
+			request.mysql_data->status = eRequestStatus::rs_Finish;
+			this->_mysql_controller.story(request.mysql_data);
+			// request.task_ptr = this->_task_controller.make_new_task(request.itle, mesh.tcp_ip, request.message);
+			request.task_ptr->status = eTaskStatus::ts_Used;
+			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
+			size = this->_list_untreated_request.size();
 			continue;
 		}
 		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
+			if (request.task_ptr->answer_message == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2) {
+				std::cerr << "-----------------222222222222----ATANTION!---------------------\n";
+
+				std::shared_ptr<Task> task_ptr = request.task_ptr;
+				try {
+					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
+					this->_mesh_controller.refresh_connection(mesh);
+					std::string 	title = task_ptr->title;
+					std::string 	message = task_ptr->message;
+
+					request.task_ptr->status = eTaskStatus::ts_Used;
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
+					i++;
+					continue;
+				} catch (std::exception &e) {}
+			}
+			// std::stringstream ss_message;
+			// ss_message << request.task_ptr->answer_message << " : " << request.task_ptr << "*" << request.task_ptr->status << "******************\n";
+			// std::cerr << ss_message.str();
 			request.mysql_data->answer_message = request.task_ptr->answer_message;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
 			request.task_ptr->status = eTaskStatus::ts_Used;
 			this->_mysql_controller.story(request.mysql_data);
-			request.mysql_data = 0;
 			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
 			size = this->_list_untreated_request.size();
 			continue;
