@@ -33,9 +33,10 @@ std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<s
 
 		try {
 			tcp_ip->custom_connect("127.0.0.1", port);
+			std::cerr  << port << "======\n";
 			data_from_tunnel = tcp_ip->custom_read();
+			std::cerr << data_from_tunnel << "*-*data from tunnel\n";
 			serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
-			std::cerr << serial_number << "\n";
 		} catch (std::exception &e) {
 			std::cerr << "ASHIBKA!\n";
 			tcp_ip->custom_disconnect();

@@ -51,9 +51,10 @@ void 	MySQLController::_init_connection() {
 		this->_connector->setSchema(this->_name_db);
 		this->_statement = this->_connector->createStatement();
 	}
-	catch (std::exception &e) {
-		std::cerr << e.what() << "\n";
-		this->_loger.make_log(e.what(),  __FILE__, __LINE__);
+	catch (sql::SQLException &e) {
+		std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
+		if (e.getErrorCode() == 2006)
+			this->_init_connection();
 	}
 }
 
@@ -78,8 +79,9 @@ bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment
 		try {
 			this->_statement->execute(ss_sql_requeset.str());
 		} catch (sql::SQLException &e) {
-			std::cerr << e.what() << "\n";
-			// std::cerr << "MySQL error code: " << e.getErrorCode();
+			std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
+			if (e.getErrorCode() == 2006)
+				this->_init_connection();
 		}
 	}
 	std::cerr << "Story proshel gladko....\n";
@@ -252,11 +254,19 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 			std::shared_ptr<MySQLDataSegment>	data_segment = std::shared_ptr<MySQLDataSegment>(new MySQLDataSegment);
 			std::string 						s_type = result->getString("Type");
 
-			data_segment->id = std::stoi(result->getString("ID"));
+			try {
+				data_segment->id = std::stoi(result->getString("ID"));
+			} catch (std::exception &e) {
+				data_segment->id = -1;
+			}
 
 			data_segment->imei = result->getString("IMEI");
 			data_segment->name_mesh = result->getString("NAME_MESH");
-			data_segment->status = std::stoi(result->getString("Status"));
+			try {
+				data_segment->status = std::stoi(result->getString("Status"));
+			} catch (std::exception &e) {
+				data_segment->status = -1;
+			}
 			if (data_segment->id > max_ip)
 			max_ip = data_segment->id;
 			if (s_type == "setting") {
@@ -295,8 +305,10 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 			}
 		}
 	}
-	catch (std::exception &e) {
-		std::cerr << e.what() << "\n????\n";
+	catch (sql::SQLException &e) {
+		std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
+		if (e.getErrorCode() == 2006)
+			this->_init_connection();
 	}
 	return q;
 }
@@ -326,10 +338,10 @@ std::string		MySQLController::get_meshes_info_by_imei(std::string imei) {
 			delete result;
 		}
 	}
-	catch (std::exception &e) {
-		std::cerr << e.what() << "\nsasat!\n";
-		this->_loger.make_log(e.what(),  __FILE__, __LINE__);
-		std::cerr << this->_connector << "\n";
+	catch (sql::SQLException &e) {
+		std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
+		if (e.getErrorCode() == 2006)
+			this->_init_connection();
 	}
 	return r_str;
 }

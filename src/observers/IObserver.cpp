@@ -39,7 +39,6 @@ void 	IObserver::_check_untreated_list_request() {
 	for (unsigned int i = 0; i < size;) {
 		Request 				&request = this->_list_untreated_request[i];
 
-		request.number_check++;
 		if (!request.task_ptr) {
 			i++;
 			std::cerr << "-----------------------------------ATANTION!---------------------\n";
@@ -53,6 +52,8 @@ void 	IObserver::_check_untreated_list_request() {
 			continue;
 		}
 		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
+			request.number_check++;
+			std::cerr << request.number_check << " ------ number check\n";
 			if (request.task_ptr->answer_message == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2) {
 				std::cerr << "-----------------222222222222----ATANTION!---------------------\n";
 
