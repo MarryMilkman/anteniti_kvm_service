@@ -41,7 +41,7 @@ void 	IObserver::_check_untreated_list_request() {
 
 		if (!request.task_ptr) {
 			i++;
-			std::cerr << "-----------------------------------ATANTION!---------------------\n";
+			std::cerr << "------------ATANTION! no task for request (CAN_NOT_FIND_MESH)-----------------\n";
 			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
 			this->_mysql_controller.story(request.mysql_data);
@@ -53,9 +53,9 @@ void 	IObserver::_check_untreated_list_request() {
 		}
 		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
 			request.number_check++;
-			std::cerr << request.number_check << " ------ number check\n";
+			// std::cerr << request.number_check << " ------ number check\n";
 			if (request.task_ptr->answer_message == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2) {
-				std::cerr << "-----------------222222222222----ATANTION!---------------------\n";
+				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP----try apply request again----------------\n";
 
 				std::shared_ptr<Task> task_ptr = request.task_ptr;
 				try {

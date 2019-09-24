@@ -46,6 +46,7 @@ enum eRequestType {
 #define SERVER_MOD_LOCK "Server_mod_lock"
 #define SERVER_MOD_FREE "Server_mod_free"
 
+#define SEND_MAC "Send_mac"
 #define SEND_INFO "Send_info"
 #define SEND_SETTING_VERSION "Send_setting_version"
 
