@@ -32,12 +32,14 @@ std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<s
 		std::string		serial_number;
 
 		try {
+			std::lock_guard<std::mutex> lock(tcp_ip->s_mutex);
 			tcp_ip->custom_connect("127.0.0.1", port);
 			std::string 		message = "Command\n***DELIM***\n" SEND_MAC;
 
 			tcp_ip->custom_write(message);
-			data_from_tunnel = tcp_ip->custom_read();
-			serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
+			// data_from_tunnel = tcp_ip->custom_read();
+			// serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
+			serial_number = tcp_ip->custom_read();
 			std::cerr << serial_number << "\n";
 		} catch (std::exception &e) {
 			std::cerr << "ASHIBKA!\n";
