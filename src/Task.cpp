@@ -24,7 +24,7 @@ Task::~Task() {
 	//
 	// ss_error_log << "remove tesk: " << this << "\n";
 	// std::cerr << ss_error_log.str();
-	this->tcp_ip = 0;
+	// this->tcp_ip = 0;
 }
 
 Task::Task(Task const & ref) :
@@ -47,9 +47,9 @@ void 		Task::operator()() {
 	std::cerr << "TASK START!\n";
 	this->status = ts_InProgres;
 	try {
-		if (!this->tcp_ip)
-			throw std::exception();
 		std::lock_guard<std::mutex>	lock(this->tcp_ip->s_mutex);
+		if (!this->tcp_ip || this->tcp_ip->status)
+			throw std::exception();
 		// std::cerr << "start do task, memory addr tcp_ip:" << this->tcp_ip << ", title:" << title << "\n";
 
 		std::cerr << "tcp was find\n";
@@ -57,9 +57,16 @@ void 		Task::operator()() {
 		this->tcp_ip->custom_write(message);
 		// std::cerr << this->tcp_ip << " ==8\n";
 		this->answer_message = this->tcp_ip->custom_read();
+		if (!this->answer_message.size()) {
+			throw std::exception();
+		}
 		// std::cerr << this->answer_message << "*******************\n";
 	} catch (std::exception &e) {
-		this->tcp_ip = 0;
+		if (this->tcp_ip) {
+			this->tcp_ip->custom_disconnect();
+			this->tcp_ip->status = 1;
+		}
+		// this->tcp_ip = 0;
 		std::cerr << "TASK_FAIL_BROKEN_TCP_IP\n";
 		this->answer_message = TASK_FAIL_BROKEN_TCP_IP;
 	}

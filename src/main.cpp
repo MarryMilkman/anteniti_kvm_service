@@ -1,6 +1,8 @@
 #include "lib.h"
 #include "controllers/MySQLController.hpp"
 #include "controllers/MeshController.hpp"
+#include "controllers/PortController.hpp"
+
 #include "observers/BlockingObserver.hpp"
 #include "observers/SettingObserver.hpp"
 #include "observers/InfoObserver.hpp"
@@ -10,6 +12,8 @@ int main() {
 
 		// MySQLController init
 	MySQLController::getInstance();
+		//PortController init
+	PortController::getInstance();
 		// MeshController init
 	MeshController::getInstance();
 		// BlockingObserver init

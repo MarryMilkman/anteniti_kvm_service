@@ -60,16 +60,7 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 
 void 		MeshController::refresh_connection(Mesh &mesh) {
 	std::cerr << "refresh_connection\n";
-	std::unique_lock<std::mutex> lock(mesh.refresh_connection_mutex, std::try_to_lock);
-
-	if (!lock.owns_lock()) {
-		std::lock_guard<std::mutex> llock(mesh.refresh_connection_mutex);
-		return ;
-	}
-	if (mesh.tcp_ip) {
-		std::cerr << "detete tcp_ip in mesh\n";
-		mesh.tcp_ip = 0;
-	}
+	
 	std::cerr << "salom\n";
 	this->_mesh_connection_controller.find_connection(mesh);
 }

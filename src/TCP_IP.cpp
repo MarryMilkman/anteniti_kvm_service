@@ -2,13 +2,21 @@
 #include "controllers/PortController.hpp"
 
 TCP_IP::TCP_IP() {
+	this->_port = 0;
 	this->_socket = 0;
-	std::cerr << "New TCP_IP created\n";
+	this->status = 0;
+	std::stringstream	ss;
+
+	ss << this << " New TCP_IP created\n";
+	std::cerr << ss.str();
 	this->fresh();
 }
 
 TCP_IP::~TCP_IP() {
-	std::cerr << "hmm!!!!!!!!!!!!!!!!!!!!!!!!!!!!mmmmm\n";
+	std::stringstream	ss;
+
+	ss << this << " Delete tcp_ip\n";
+	std::cerr << ss.str();
 	this->fresh();
 }
 
@@ -23,7 +31,13 @@ TCP_IP	&TCP_IP::operator=(TCP_IP const & ref) {
 
 	// connect
 void 		TCP_IP::custom_connect(std::string ip, int port) {
-	std::cerr << "..................connect..................\n";
+	this->_port = port;
+	std::stringstream	ss;
+
+	ss << this << " ..................connect..................\n";
+	std::cerr << ss.str();
+	if (!PortController::getInstance().try_reserv_port(port))
+		throw std::exception();
 	this->_init(ip, port);
 	fd_set          readfds;
     struct timeval  timeout;
@@ -36,15 +50,16 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
     if (activity <= 0) {
         throw std::exception();
     }
-	if (!PortController::getInstance().try_reserv_port(port))
-		throw std::exception();
     if (connect(this->_socket, (struct sockaddr *)&this->_addres, sizeof(this->_addres)) < 0)
         throw std::exception();
 }
 
 	// read
 std::string	TCP_IP::custom_read() {
-	std::cerr << "..................read..................\n";
+	std::stringstream	ss;
+
+	ss << this << " ..................read..................\n";
+	std::cerr << ss.str();
 
 	char	    buffer[124];
     std::string message;
@@ -66,7 +81,10 @@ std::string	TCP_IP::custom_read() {
 
 	// write
 void 		TCP_IP::custom_write(std::string message) {
-	std::cerr << "..................write..................\n";
+	std::stringstream	ss;
+
+	ss << this << " ..................write..................\n";
+	std::cerr << ss.str();
 
 	int 		byts;
     const char	*buff;
@@ -84,7 +102,10 @@ void 		TCP_IP::custom_write(std::string message) {
 		buff += byts;
     }
 	if (byts < 0) {
-		std::cerr << "HUETA!\n";
+		std::stringstream	ss;
+
+		ss << this << " HUETA!\n";
+		std::cerr << ss.str();
 		throw std::exception();
 	}
     // shutdown(this->_socket, 1);
@@ -92,7 +113,11 @@ void 		TCP_IP::custom_write(std::string message) {
 
 	// disconnect
 void 		TCP_IP::custom_disconnect() {
-	std::cerr << "..................disconnect..................\n";
+	std::stringstream	ss;
+
+	ss << this << "  ..................disconnect from port:" << this->_port << "\n";
+	std::cerr << ss.str();
+	PortController::getInstance().unreserv_port(this->_port);
 
 	if (this->_socket > 0)
 		close(this->_socket);
@@ -103,7 +128,10 @@ void 		TCP_IP::custom_disconnect() {
 void 		TCP_IP::_init(std::string ip, int port) {
 	int     opt = 1;
 
-	std::cerr << "..................init..................\n";
+	std::stringstream	ss;
+
+	ss << this << " ..................init..................\n";
+	std::cerr << ss.str();
 
 	if (this->_socket > 0) {
 		close(this->_socket);
@@ -123,8 +151,12 @@ void 		TCP_IP::_init(std::string ip, int port) {
 	// fresh()
 void 		TCP_IP::fresh() {
 
-	std::cerr << "..................fresh..................\n";
+	std::stringstream	ss;
 
+	ss << this << " ..................fresh..................\n";
+	std::cerr << ss.str();
+	PortController::getInstance().unreserv_port(this->_port);
+	this->_port = 0;
 	if (this->_socket)
 		close (this->_socket);
 	this->_socket = 0;

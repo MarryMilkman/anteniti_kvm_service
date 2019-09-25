@@ -20,9 +20,12 @@ public:
 
 	std::mutex 		s_mutex;
 
+	int 			status;
+
 private:
 	int 				_socket;
 	struct sockaddr_in	_addres;
+	int 				_port;
 
 	void 				_init(std::string ip, int port);
 
