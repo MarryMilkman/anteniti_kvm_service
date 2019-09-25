@@ -40,6 +40,7 @@ set(SRC
 		${SRC_DIRECTORY}/controllers/TaskController.cpp
 		${SRC_DIRECTORY}/controllers/MeshConnectionController.cpp
 		${SRC_DIRECTORY}/controllers/MeshController.cpp
+		${SRC_DIRECTORY}/controllers/PortController.cpp
 
 		${SRC_DIRECTORY}/observers/IObserver.cpp
 		${SRC_DIRECTORY}/observers/InfoObserver.cpp

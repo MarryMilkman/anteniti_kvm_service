@@ -1,4 +1,5 @@
 #include "TCP_IP.hpp"
+#include "controllers/PortController.hpp"
 
 TCP_IP::TCP_IP() {
 	this->_socket = 0;
@@ -35,6 +36,8 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
     if (activity <= 0) {
         throw std::exception();
     }
+	if (!PortController::getInstance().try_reserv_port(port))
+		throw std::exception();
     if (connect(this->_socket, (struct sockaddr *)&this->_addres, sizeof(this->_addres)) < 0)
         throw std::exception();
 }

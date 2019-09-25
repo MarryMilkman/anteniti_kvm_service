@@ -21,10 +21,10 @@ public:
 	void 		refresh_connection(Mesh &mesh);
 
 private:
-	std::map<std::string, std::shared_ptr<std::mutex>>			_map_mutex;
+	std::map<std::string /* imei */, std::shared_ptr<std::mutex>>			_map_mutex;
 	MySQLController								&_mysql_controller;
 	MeshConnectionController					&_mesh_connection_controller;
-	std::map<std::string, std::vector<Mesh>>	_map_mesh;
+	std::map<std::string  /* imei */, std::vector<Mesh>>	_map_mesh;
 
 	void 						_registered_new_mesh(std::string imei);
 };
