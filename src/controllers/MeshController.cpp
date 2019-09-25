@@ -26,7 +26,7 @@ Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	for (Mesh &mesh : this->_map_mesh[imei])
 		if (mesh.name == name_mesh) {
 			if (!mesh.tcp_ip)
-				mesh.tcp_ip = std::shared_ptr<TCP_IP>(this->_mesh_connection_controller.find_connection(mesh.list_serial_number));
+				this->_mesh_connection_controller.find_connection(mesh);
 			return mesh;
 		}
 		// need_realiz
@@ -71,5 +71,5 @@ void 		MeshController::refresh_connection(Mesh &mesh) {
 		mesh.tcp_ip = 0;
 	}
 	std::cerr << "salom\n";
-	mesh.tcp_ip = std::shared_ptr<TCP_IP>(this->_mesh_connection_controller.find_connection(mesh.list_serial_number));
+	this->_mesh_connection_controller.find_connection(mesh);
 }

@@ -109,6 +109,7 @@ void 		TCP_IP::_init(std::string ip, int port) {
 	if (!(this->_socket = socket(AF_INET, SOCK_STREAM, 0)))
         throw std::exception();
 	// fcntl(this->_socket, F_SETFL, O_NONBLOCK);
+	// setsockopt(this->_socket, SOL_SOCKET, SO_REUSEPORT, &n_opt, sizeof(n_opt));
 	setsockopt(this->_socket, SOL_SOCKET, SO_DONTROUTE, &opt, sizeof(opt));
 	this->_addres.sin_family = AF_INET;
 	this->_addres.sin_port = htons(port);

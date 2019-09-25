@@ -3,6 +3,7 @@
 #include "TCP_IP.hpp"
 #include "Parser.hpp"
 #include "ScriptExecutor.hpp"
+#include "Mesh.hpp"
 
 MeshConnectionController::MeshConnectionController()
 {
@@ -19,10 +20,15 @@ MeshConnectionController	&MeshConnectionController::getInstance() {
 }
 
 // check open port and compare data from tunnel with std::vector; stroy if find equal
-std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<std::string> &serial_numbers_of_mesh) {
+void		MeshConnectionController::find_connection(Mesh &mesh) {
 	std::cerr << "mesh_connection_controller.find_connection\n";
-	if (!serial_numbers_of_mesh.size())
-		return 0;
+	if (!mesh.list_serial_number.size())
+		return ;
+	// std::unique_lock<std::mutex> un_lock(mesh.refresh_connection_mutex, std::try_to_lock);
+	// if (!un_lock.owns_lock()) {
+	// 	std::lock_guard<std::mutex>	lg_lock(mesh.refresh_connection_mutex);
+	// 	return ;
+	// }
 
 	std::vector<int> 		active_port = this->_get_active_port();
 	std::shared_ptr<TCP_IP> tcp_ip(new TCP_IP);
@@ -47,16 +53,16 @@ std::shared_ptr<TCP_IP>		MeshConnectionController::find_connection(std::vector<s
 			continue;
 		}
 		std::cerr << serial_number << " data from tunnel.........\n";
-		for (std::string sn_mesh : serial_numbers_of_mesh) {
+		for (std::string sn_mesh : mesh.list_serial_number) {
 			if (sn_mesh == serial_number) {
-				return tcp_ip;
+				mesh.tcp_ip = tcp_ip;
+				return ;
 			}
 		}
 		tcp_ip->custom_disconnect();
 		// tcp_ip->fresh();
 	}
-	tcp_ip = 0;
-	return 0;
+	mesh.tcp_ip = 0;
 }
 
 std::vector<int>	MeshConnectionController::_get_active_port() const {
