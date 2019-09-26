@@ -11,7 +11,17 @@ MySQLController::MySQLController() :
 }
 
 MySQLController::~MySQLController() {
-
+	if (this->_statement) {
+		// std::cerr << "delete _statement in MySQLController  MySQLController::_init_connection\n";
+		delete this->_statement;
+	}
+	if (this->_connector) {
+		// std::cerr << "delete _connector in MySQLController  MySQLController::_init_connection\n";
+		delete this->_connector;
+	}
+	if (this->_driver) {
+		this->_driver->threadEnd();
+	}
 }
 
 MySQLController 	&MySQLController::getInstance() {
@@ -22,13 +32,13 @@ MySQLController 	&MySQLController::getInstance() {
 
 
 void 	MySQLController::_init_connection() {
-	if (this->_connector) {
-		// std::cerr << "delete _connector in MySQLController  MySQLController::_init_connection\n";
-		delete this->_connector;
-	}
 	if (this->_statement) {
 		// std::cerr << "delete _statement in MySQLController  MySQLController::_init_connection\n";
 		delete this->_statement;
+	}
+	if (this->_connector) {
+		// std::cerr << "delete _connector in MySQLController  MySQLController::_init_connection\n";
+		delete this->_connector;
 	}
 	this->_connector = 0;
 	this->_statement = 0;
