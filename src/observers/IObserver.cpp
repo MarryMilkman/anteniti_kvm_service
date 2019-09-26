@@ -40,13 +40,11 @@ void 	IObserver::_check_untreated_list_request() {
 		Request 				&request = this->_list_untreated_request[i];
 
 		if (!request.task_ptr) {
-			i++;
 			std::cerr << "------------ATANTION! no task for request (CAN_NOT_FIND_MESH)-----------------\n";
 			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
 			this->_mysql_controller.story(request.mysql_data);
 			// request.task_ptr = this->_task_controller.make_new_task(request.itle, mesh.tcp_ip, request.message);
-			request.task_ptr->status = eTaskStatus::ts_Used;
 			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
 			size = this->_list_untreated_request.size();
 			continue;
