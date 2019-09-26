@@ -1,3 +1,11 @@
+/*
+	BlockingObserver
+class to track about new block-request
+
+_list_untreated_request - list request, that alredy not processed (thay in progress)
+*/
+
+
 #include "controllers/MeshController.hpp"
 #include "controllers/TaskController.hpp"
 #include "observers/BlockingObserver.hpp"
@@ -22,10 +30,16 @@ BlockingObserver	&BlockingObserver::getInstance() {
 void 	BlockingObserver::operator()() {
 	while (1) {
 		this->_execute_list_request();
+			// virtual method (override)
 		this->_check_untreated_list_request();
 	}
 }
 
+// MARK : - _execute_list_request
+//	1) check new request in mysql (with help of _mysql_controller) and story tham to _list_untreated_request
+//	2) from request get imei and name_mesh for founding correct Mesh-network
+//		if find -> make new Task (_task_controller.make_task), and story tham in current request
+// 		if not find -> current request stay without Task (CAN_NOT_FIND_MESH)
 void 	BlockingObserver::_execute_list_request() {
 	if (!this->_list_untreated_request.size())
 		this->_refresh_untreated_list_request(eRequestType::rt_BlockRequest);

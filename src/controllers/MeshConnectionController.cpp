@@ -19,7 +19,8 @@ MeshConnectionController	&MeshConnectionController::getInstance() {
 	return mesh_connection_controller;
 }
 
-// check open port and compare data from tunnel with std::vector; stroy if find equal
+// 	check open port and compare data from tunnel with std::vector of serial_number;
+//		story std::shared_ptr<TCP_IP> to mesh.tcp_ip if find equal
 void		MeshConnectionController::find_connection(Mesh &mesh) {
 	std::cerr << "mesh_connection_controller.find_connection\n";
 	std::unique_lock<std::mutex> lock(mesh.refresh_connection_mutex, std::try_to_lock);
@@ -45,7 +46,6 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 		std::string		serial_number;
 
 		try {
-			// std::lock_guard<std::mutex> lock(tcp_ip->s_mutex);
 			std::lock_guard<std::mutex>	lock(mesh.tcp_ip->s_mutex);
 			if (!mesh.tcp_ip->status)
 				return;
@@ -79,6 +79,7 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 	}
 }
 
+// use scrept for check open port with LISTEN on addr 127.0.0.1; return list of find ports
 std::vector<int>	MeshConnectionController::_get_active_port() const {
 	std::string 				path_to_script = ScriptExecutor::PathToScript + "detect_open_ssh_tunnel_port.sh";
 	std::string 				str_with_port = ScriptExecutor::getOutput::execute(path_to_script);

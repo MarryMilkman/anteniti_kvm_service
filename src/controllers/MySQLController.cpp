@@ -30,7 +30,8 @@ MySQLController 	&MySQLController::getInstance() {
 	return _mysql_controller;
 }
 
-
+// _init_connection
+//	init and reinit (if needed) MySQL connection
 void 	MySQLController::_init_connection() {
 	if (this->_statement) {
 		// std::cerr << "delete _statement in MySQLController  MySQLController::_init_connection\n";
@@ -68,7 +69,8 @@ void 	MySQLController::_init_connection() {
 	}
 }
 
-
+// story
+//	story std::shared_ptr<MySQLDataSegment> to myqsl data base
 bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment) {
 	std::stringstream 	ss_sql_requeset;
 
@@ -98,6 +100,8 @@ bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment
 	return true;
 }
 
+// MARK : - get_request
+	//	get type of need list_request; depending on type calls the metod, that return ask data
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::get_request(eRequestType type_request) {
 	if (type_request == eRequestType::rt_InfoRequest)
 		return this->_get_request_info();
@@ -110,8 +114,14 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::get_request(eReq
 }
 
 
-// MARK : - GETTERS
+// MARK : - GETTERS requests
 
+	// _get_request_info - looking through _list_request_info and check every MySQLDataSegment.status
+	//		if status == 0 (NotProcessed) - story ro return list
+	//		if status == 2 (Finish) - unstory data from _list_request_info
+	//	if return_list.size > 0 -> return this list
+	//	else start update ALL request_list (_update_all_list), and than try repit procedure
+	//	and in any case (return_list.size) return r_list;
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_info() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
 
@@ -145,6 +155,8 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_inf
 	return r_list;
 }
 
+	// _get_request_block
+	// same as _get_request_info, bat hear we loking for _list_request_block
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_block() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
 
@@ -179,6 +191,8 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_blo
 	return r_list;
 }
 
+	// _get_request_setting
+	// same as _get_request_info, bat hear we loking for _list_request_setting
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_setting() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
 
@@ -212,40 +226,6 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_set
 	return r_list;
 }
 
-
-
-// std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_setting() {
-// 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
-//
-// 	for (int i = 0, size = this->_list_request_setting.size(); i < size;) {
-// 		std::shared_ptr<MySQLDataSegment>	ms_data = this->_list_request_setting[i];
-// 		if (ms_data->status == 0)
-// 			r_list.push_back(ms_data);
-// 		else if (ms_data->status == 2) {
-// 			this->_list_request_setting.erase(this->_list_request_setting.begin() + i);
-// 			size = this->_list_request_setting.size();
-// 			continue;
-// 		}
-// 		i++;
-// 	}
-// 	if (r_list.size())
-// 		return r_list;
-// 	std::unique_lock<std::mutex> lock(this->_mutex, std::try_to_lock);
-// 	if (lock.owns_lock() && this->_update_all_list(eRequestType::rt_SettingRequest)) {
-// 		for (int i = 0, size = this->_list_request_setting.size(); i < size;) {
-// 			std::shared_ptr<MySQLDataSegment>	ms_data = this->_list_request_setting[i];
-// 			if (ms_data->status == 0)
-// 				r_list.push_back(ms_data);
-// 			else if (ms_data->status == 2) {
-// 				this->_list_request_setting.erase(this->_list_request_setting.begin() + i);
-// 				size = this->_list_request_setting.size();
-// 				continue;
-// 			}
-// 			i++;
-// 		}
-// 	}
-// 	return r_list;
-// }
 
 // update all request from db. if have some new request with type == question -> return true
 bool			MySQLController::_update_all_list(eRequestType question) {
@@ -326,7 +306,7 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 
 
 // MARK : - get_meshes_info_by_imei
-//	turn to tible with info about mesh (DEVICESN --_--)
+//	accesses the table for mesh information (DEVICESN --_--)
 std::string		MySQLController::get_meshes_info_by_imei(std::string imei) {
 	std::stringstream 	ss_sql_requeset;
 	std::string			r_str = "";

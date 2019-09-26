@@ -1,3 +1,11 @@
+/*
+	IObserver
+Interface of observers.
+virtual metods: _refresh_untreated_list_request, _check_untreated_list_request
+for uses need override    operator();
+*/
+
+
 #include "observers/IObserver.hpp"
 #include "controllers/MySQLController.hpp"
 #include "controllers/TaskController.hpp"
@@ -32,7 +40,9 @@ void 		IObserver::_refresh_untreated_list_request(eRequestType type_request) {
 
 //	check every request in _list_untreated_request.
 //		if task_ptr finish => check tcp_ip (is send/apply executed correct ?
-// 				story to mysql answer and delete request : refresh connection to mesh and try repeat tesk)
+// 				story to mysql answer and delete request : refresh connection to mesh and try repeat tesk (2 retray))
+//		if no task_ptr
+//			story to mysql request CAN_NOT_FIND_MESH
 void 	IObserver::_check_untreated_list_request() {
 	unsigned int 		size = this->_list_untreated_request.size();
 

@@ -21,6 +21,11 @@ MeshController 	&MeshController::getInstance() {
 	return _mesh_controller;
 }
 
+//	check self list of mesh.
+//		if find - check tcp_ip and fresh connect if need
+//		if not_find - use _mysql_controller for find mesh in data_base (DEVICESN table) by imei + mesh
+//			if found - story new mesh to _map_mesh and refresh this connection
+//			if not_found - make exception
 Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	std::cerr << "NEED MESH!\n";
 	for (Mesh &mesh : this->_map_mesh[imei])
@@ -48,6 +53,8 @@ Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	throw std::exception();
 }
 
+//	with help of _mysql_controller get list of Mesh (by imei)
+//	refresh connect of this mesh and then story tham to _map_mesh
 void 		MeshController::_registered_new_mesh(std::string imei) {
 	std::vector<Mesh> 	list_new_mesh = Parser::MySQL::meshes_info_to_list_mesh(this->_mysql_controller.get_meshes_info_by_imei(imei));
 
@@ -57,10 +64,9 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 }
 
 
-
+//	use _mesh_connection_controller.find_connection for refresh connection of mesh
 void 		MeshController::refresh_connection(Mesh &mesh) {
 	std::cerr << "refresh_connection\n";
-	
-	std::cerr << "salom\n";
+
 	this->_mesh_connection_controller.find_connection(mesh);
 }

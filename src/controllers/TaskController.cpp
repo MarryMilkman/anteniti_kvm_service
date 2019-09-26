@@ -15,6 +15,9 @@ TaskController	&TaskController::getInstance() {
 	return _task_controller;
 }
 
+	// make_new_task - get task from pool of task (_pull_task[MAX_TASK])
+	//	if no free task in pool -> return 0
+	//	else make new thread, and story tham to Task.thread_, then return Task
 std::shared_ptr<Task>	TaskController::make_new_task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message) {
 	int 		i = 0;
 
