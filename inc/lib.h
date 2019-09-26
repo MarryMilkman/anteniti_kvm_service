@@ -41,7 +41,7 @@ enum eRequestType {
 // define for comunicate:
 #define CAN_NOT_FIND_MESH "Can_not_find_mesh"
 
-#define BLOCK_DEVICE "Block_device"
+#define BLOCKLIST_CHANGE "Block_list_changed"
 
 #define SERVER_MOD_LOCK "Server_mod_lock"
 #define SERVER_MOD_FREE "Server_mod_free"

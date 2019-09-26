@@ -40,7 +40,7 @@ void 	BlockingObserver::_execute_list_request() {
 					std::string 	message;
 
 					message = std::string("Command") + std::string("\n***DELIM***\n");
-					message += BLOCK_DEVICE;
+					message += BLOCKLIST_CHANGE;
 					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
 					break;
 				}
