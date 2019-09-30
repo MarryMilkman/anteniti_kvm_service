@@ -71,9 +71,10 @@ void 	IObserver::_check_untreated_list_request() {
 					this->_mesh_controller.refresh_connection(mesh);
 					std::string 	title = task_ptr->title;
 					std::string 	message = task_ptr->message;
+					int 			timeout = task_ptr->timeout;
 
 					request.task_ptr->status = eTaskStatus::ts_Used;
-					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
 					i++;
 					continue;
 				} catch (std::exception &e) {}

@@ -55,7 +55,7 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
 }
 
 	// read
-std::string	TCP_IP::custom_read() {
+std::string	TCP_IP::custom_read(int timeout) {
 	std::stringstream	ss;
 
 	ss << this << " ..................read..................\n";
@@ -66,7 +66,7 @@ std::string	TCP_IP::custom_read() {
     int         byts;
 	struct timeval tv;
 
-	tv.tv_sec = 1;
+	tv.tv_sec = timeout;
 	tv.tv_usec = 0;
 	setsockopt(this->_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 	byts = recv(this->_socket, buffer, sizeof(buffer) - 1, 0);

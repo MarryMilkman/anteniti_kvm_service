@@ -26,7 +26,7 @@ public:
 	TaskController operator=(TaskController const & ref) = delete;
 	static TaskController	&getInstance();
 
-	std::shared_ptr<Task>	make_new_task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message);
+	std::shared_ptr<Task>	make_new_task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message, int timeout);
 private:
 	CustomThread	_pull_task[MAX_TASK];
 

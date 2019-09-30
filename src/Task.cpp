@@ -1,12 +1,13 @@
 #include "Task.hpp"
 #include "TCP_IP.hpp"
 
-Task::Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string message) :
+Task::Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string message, int timeout) :
 	tcp_ip(tcp_ip)
 {
 	this->title = title;
 	this->message = message;
 	this->status = eTaskStatus::ts_Created;
+	this->timeout = timeout;
 	// std::stringstream 	print_ss;
 	//
 	//  print_ss << "created task: " << this << "\n";
@@ -38,6 +39,7 @@ Task &Task::operator=(Task const & ref) {
 	this->message = ref.message;
 	this->tcp_ip = ref.tcp_ip;
 	this->status = ref.status;
+	this->timeout = ref.timeout;
 	this->answer_message = ref.answer_message;
 	return *this;
 }
@@ -56,7 +58,7 @@ void 		Task::operator()() {
 		// std::cerr << this->tcp_ip << " ==8\n";
 		this->tcp_ip->custom_write(message);
 		// std::cerr << this->tcp_ip << " ==8\n";
-		this->answer_message = this->tcp_ip->custom_read();
+		this->answer_message = this->tcp_ip->custom_read(this->timeout);
 		if (!this->answer_message.size()) {
 			throw std::exception();
 		}

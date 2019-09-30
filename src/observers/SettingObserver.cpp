@@ -54,7 +54,7 @@ void 	SettingObserver::_execute_list_request() {
 
 					message = std::string("Command") + std::string("\n***DELIM***\n");
 					message += SETTING_CHANGED;
-					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message);
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, 6);
 					break;
 				}
 				catch (std::exception &ref){

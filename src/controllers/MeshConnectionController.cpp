@@ -56,7 +56,7 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 			mesh.tcp_ip->custom_write(message);
 			// data_from_tunnel = tcp_ip->custom_read();
 			// serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
-			serial_number = mesh.tcp_ip->custom_read();
+			serial_number = mesh.tcp_ip->custom_read(1);
 			std::cerr << serial_number << "\n";
 		} catch (std::exception &e) {
 			std::stringstream 	print_ss;

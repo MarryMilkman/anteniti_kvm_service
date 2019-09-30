@@ -11,7 +11,7 @@ public:
 	TCP_IP &operator=(TCP_IP const &ref);
 
 	void 		custom_connect(std::string ip, int port);
-	std::string	custom_read();
+	std::string	custom_read(int timeout);
 	void 		custom_write(std::string message);
 	void 		custom_disconnect();
 
