@@ -8,6 +8,8 @@ MySQLController::MySQLController() :
 	this->_statement = 0;
 	this->_driver = get_driver_instance();
 	this->_init_connection();
+	std::cerr << this->_connector << "\n";
+	std::cerr << this->_statement << "\n";
 }
 
 MySQLController::~MySQLController() {
@@ -75,8 +77,11 @@ bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment
 	std::stringstream 	ss_sql_requeset;
 
 	std::cerr << "Story start....\n";
-	if (!data_segment)
-		return false;
+	if (!this->_connector || !this->_statement) {
+		this->_init_connection();
+		if (!data_segment || !this->_statement)
+			return false;
+	}
 	ss_sql_requeset << "UPDATE KVM SET Status = \'2\', ANS_Message = \'"
 					<< data_segment->answer_message << "\' WHERE ID = \'" << data_segment->id << "\'";
 	// this->_remove_from_list_request(data_segment);
@@ -234,6 +239,11 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 	std::stringstream 	ss_sql_requeset;
 	sql::ResultSet 		*result = 0;
 
+	if (!this->_connector || !this->_statement) {
+		this->_init_connection();
+		if (!this->_connector || !this->_statement)
+			return false;
+	}
 	ss_sql_requeset << "SELECT ID, Type, IMEI, NAME_MESH, Status FROM KVM WHERE Status = \'0\'";
 	try {
 		{
@@ -312,6 +322,11 @@ std::string		MySQLController::get_meshes_info_by_imei(std::string imei) {
 	std::string			r_str = "";
 	sql::ResultSet 		*result = 0;
 
+	if (!this->_connector || !this->_statement) {
+		this->_init_connection();
+		if (!this->_connector || !this->_statement)
+			return r_str;
+	}
 	ss_sql_requeset << "SELECT SN, NETWORK FROM DEVICESN WHERE IMEI = \'" << imei <<"\'";
 	try {
 		// std::cerr << ss_sql_requeset.str() << "\n----------\n";
