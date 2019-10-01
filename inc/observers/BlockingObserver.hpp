@@ -16,7 +16,7 @@ public:
 	void 	operator()() override;
 private:
 	Loger 	_loger;
-	void	_execute_list_request() override;
+	// void	_execute_list_request() override;
 };
 
 #endif

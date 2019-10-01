@@ -27,9 +27,10 @@ protected:
 	MeshController 						&_mesh_controller;
 	std::vector<Request>				_list_untreated_request;
 
+
 	void 			_refresh_untreated_list_request(eRequestType type_request);
 	void 			_check_untreated_list_request();
-	virtual void 	_execute_list_request() = 0;
+	void 			_execute_list_request(std::string message_for_task, eRequestType type_request);
 };
 
 #endif

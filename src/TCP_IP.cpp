@@ -15,6 +15,7 @@ TCP_IP::TCP_IP() {
 TCP_IP::~TCP_IP() {
 	std::stringstream	ss;
 
+	PortController::getInstance().unreserv_port(this->_port);
 	ss << this << " Delete tcp_ip\n";
 	std::cerr << ss.str();
 	this->fresh();

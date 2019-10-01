@@ -26,6 +26,37 @@ IObserver::~IObserver() {
 
 }
 
+
+void 	IObserver::_execute_list_request(std::string message_for_task, eRequestType type_request) {
+	if (!this->_list_untreated_request.size())
+		this->_refresh_untreated_list_request(type_request);
+	for (Request &request : this->_list_untreated_request) {
+		if (request.task_ptr)
+			continue;
+		try {
+			request.is_mesh_find = false;
+			Mesh &mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
+
+			request.is_mesh_find = true;
+
+			std::string 	title = mesh.list_serial_number[0] + " " + message_for_task;
+			std::string 	message;
+
+			message = std::string("Command") + std::string("\n***DELIM***\n");
+			message += message_for_task;
+			// while (!request.task_ptr)
+				request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, 6);
+		} catch (std::exception &e) {
+			continue;
+		}
+	}
+}
+
+
+
+
+
+
 // get data from mysql and story untreated data to _list_untreated_request + change status data
 void 		IObserver::_refresh_untreated_list_request(eRequestType type_request) {
 	std::vector<std::shared_ptr<MySQLDataSegment>> 	list_mysql_data = this->_mysql_controller.get_request(type_request);
@@ -49,7 +80,12 @@ void 	IObserver::_check_untreated_list_request() {
 	for (unsigned int i = 0; i < size;) {
 		Request 				&request = this->_list_untreated_request[i];
 
+		// std::cerr << request.task_ptr << "\n";
 		if (!request.task_ptr) {
+			if (request.is_mesh_find) {
+				i++;
+				continue;
+			}
 			std::cerr << "------------ATANTION! no task for request (CAN_NOT_FIND_MESH)-----------------\n";
 			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
@@ -61,6 +97,7 @@ void 	IObserver::_check_untreated_list_request() {
 		}
 		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
 			request.number_check++;
+			std::cerr << "request.task_ptr->status >= eTaskStatus::ts_Finish" << "\n";
 			// std::cerr << request.number_check << " ------ number check\n";
 			if (request.task_ptr->answer_message == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2) {
 				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP----try apply request again----------------\n";

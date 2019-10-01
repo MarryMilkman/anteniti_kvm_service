@@ -20,6 +20,7 @@ public:
 	std::shared_ptr<MySQLDataSegment>	mysql_data;
 	std::shared_ptr<Task>				task_ptr;
 	int 								number_check;
+	bool 								is_mesh_find;
 
 	// RequestForInformation {
 	// 	this->task = 0;
