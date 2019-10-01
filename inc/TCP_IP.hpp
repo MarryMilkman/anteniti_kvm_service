@@ -19,7 +19,7 @@ public:
 	void 		fresh();
 
 	std::mutex 		s_mutex;
-
+	std::string 	connected_mac;
 	int 			status;
 
 private:

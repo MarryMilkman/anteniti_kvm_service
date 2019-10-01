@@ -70,6 +70,7 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 		for (std::string sn_mesh : mesh.list_serial_number) {
 			if (sn_mesh == serial_number) {
 				mesh.tcp_ip->status = 0;
+				mesh.tcp_ip->connected_mac = serial_number;
 				return ;
 			}
 		}
