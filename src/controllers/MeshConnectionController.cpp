@@ -1,4 +1,5 @@
 #include "controllers/MeshConnectionController.hpp"
+#include "controllers/PortController.hpp"
 #include "ScriptExecutor.hpp"
 #include "TCP_IP.hpp"
 #include "Parser.hpp"
@@ -31,52 +32,52 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 	}
 	if (!mesh.list_serial_number.size())
 		return ;
-	// std::unique_lock<std::mutex> un_lock(mesh.refresh_connection_mutex, std::try_to_lock);
-	// if (!un_lock.owns_lock()) {
-	// 	std::lock_guard<std::mutex>	lg_lock(mesh.refresh_connection_mutex);
-	// 	return ;
-	// }
 
 	std::vector<int> 		active_port = this->_get_active_port();
+	std::vector<int>		recheck_port_list;
 	if (!mesh.tcp_ip)
 		mesh.tcp_ip = std::shared_ptr<TCP_IP>(new TCP_IP);
 
-	for (int port : active_port) {
-		std::string 	data_from_tunnel;
-		std::string		serial_number;
+	while (active_port.size()) {
+		for (int port : active_port) {
+			std::string 	data_from_tunnel;
+			std::string		serial_number;
 
-		try {
-			std::lock_guard<std::mutex>	lock(mesh.tcp_ip->s_mutex);
-			if (!mesh.tcp_ip->status)
+			try {
+				std::lock_guard<std::mutex>	lock(mesh.tcp_ip->s_mutex);
+				if (!mesh.tcp_ip->status)
 				return;
-			mesh.tcp_ip->fresh();
-			mesh.tcp_ip->custom_connect("127.0.0.1", port);
-			std::string 		message = "Command\n***DELIM***\n" SEND_MAC;
+				mesh.tcp_ip->fresh();
+				mesh.tcp_ip->custom_connect("127.0.0.1", port);
+				std::string 		message = "Command\n***DELIM***\n" SEND_MAC;
 
-			mesh.tcp_ip->custom_write(message);
-			// data_from_tunnel = tcp_ip->custom_read();
-			// serial_number = Parser::SSHTunnel::get_serial_number_from_authorization(data_from_tunnel);
-			serial_number = mesh.tcp_ip->custom_read(1);
-			std::cerr << serial_number << "\n";
-		} catch (std::exception &e) {
-			std::stringstream 	print_ss;
-
-			mesh.tcp_ip->status = 1;
-			print_ss << port << " - Uncorrect port for connect......error\n";
-			mesh.tcp_ip->custom_disconnect();
-			continue;
-		}
-		std::cerr << serial_number << " data from tunnel.........\n";
-		for (std::string sn_mesh : mesh.list_serial_number) {
-			if (sn_mesh == serial_number) {
-				mesh.tcp_ip->status = 0;
-				mesh.tcp_ip->connected_mac = serial_number;
-				return ;
+				mesh.tcp_ip->custom_write(message);
+				serial_number = mesh.tcp_ip->custom_read(1);
+				std::cerr << serial_number << "\n";
+			} catch (TCP_IP::CustomException &exception_tcp_ip) {
+				if (exception_tcp_ip.type == eTypeExceptionTCP_IP::te_PortInCheck) {
+					recheck_port_list.push_back(port);
+					mesh.tcp_ip->status = 1;
+					mesh.tcp_ip->custom_disconnect();
+					continue;
+				}
+				mesh.tcp_ip->status = 1;
+				mesh.tcp_ip->custom_disconnect();
+				continue;
 			}
+			std::cerr << serial_number << " data from tunnel.........\n";
+			for (std::string sn_mesh : mesh.list_serial_number) {
+				if (sn_mesh == serial_number) {
+					mesh.tcp_ip->status = 0;
+					mesh.tcp_ip->connected_mac = serial_number;
+					PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse);
+					return ;
+				}
+			}
+			mesh.tcp_ip->status = 1;
+			mesh.tcp_ip->custom_disconnect();
 		}
-		mesh.tcp_ip->status = 1;
-		mesh.tcp_ip->custom_disconnect();
-		// tcp_ip->fresh();
+		active_port = recheck_port_list;
 	}
 }
 

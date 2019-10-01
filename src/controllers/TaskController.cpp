@@ -53,7 +53,7 @@ TaskController::CustomThread::CustomThread(CustomThread const &ref) {
 	*this = ref;
 }
 
-TaskController::CustomThread &TaskController::CustomThread::operator=(CustomThread const &ref) {
+TaskController::CustomThread	&TaskController::CustomThread::operator=(CustomThread const &ref) {
 	// this->thread_ = std::move(ref.thread_);
 	this->task_ptr = ref.task_ptr;
 	return *this;

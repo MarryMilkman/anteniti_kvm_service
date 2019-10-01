@@ -30,15 +30,25 @@ TCP_IP	&TCP_IP::operator=(TCP_IP const & ref) {
 	return *this;
 }
 
+
 	// connect
 void 		TCP_IP::custom_connect(std::string ip, int port) {
 	this->_port = port;
 	std::stringstream	ss;
+	eLockStatus 		lock_status;
 
 	ss << this << " ..................connect..................\n";
 	std::cerr << ss.str();
-	if (!PortController::getInstance().try_reserv_port(port))
-		throw std::exception();
+	lock_status = PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForCheck);
+
+	if (lock_status != eLockStatus::ls_ReservSeccess) {
+		if (lock_status == eLockStatus::ls_InCheck)
+			throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_PortInCheck);
+		else if (lock_status == eLockStatus::ls_InUse)
+			throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_PortInUse);
+		else
+			throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
+	}
 	this->_init(ip, port);
 	fd_set          readfds;
     struct timeval  timeout;
@@ -49,10 +59,10 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
     FD_SET(this->_socket , &readfds);
     int activity = select(this->_socket + 1, &readfds, 0, 0, &timeout);
     if (activity <= 0) {
-        throw std::exception();
+        throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
     }
     if (connect(this->_socket, (struct sockaddr *)&this->_addres, sizeof(this->_addres)) < 0)
-        throw std::exception();
+        throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
 }
 
 	// read
@@ -72,7 +82,7 @@ std::string	TCP_IP::custom_read(int timeout) {
 	setsockopt(this->_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 	byts = recv(this->_socket, buffer, sizeof(buffer) - 1, 0);
 	if (byts < 0)
-		throw std::exception();
+		throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
     buffer[byts] = 0;
     message = buffer;
     // shutdown(this->_socket, 0);
@@ -107,7 +117,7 @@ void 		TCP_IP::custom_write(std::string message) {
 
 		ss << this << " HUETA!\n";
 		std::cerr << ss.str();
-		throw std::exception();
+		throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
 	}
     // shutdown(this->_socket, 1);
 }
@@ -139,7 +149,7 @@ void 		TCP_IP::_init(std::string ip, int port) {
 		this->_socket = 0;
 	}
 	if (!(this->_socket = socket(AF_INET, SOCK_STREAM, 0)))
-        throw std::exception();
+        throw TCP_IP::CustomException(eTypeExceptionTCP_IP::te_SysError);
 	// fcntl(this->_socket, F_SETFL, O_NONBLOCK);
 	// setsockopt(this->_socket, SOL_SOCKET, SO_REUSEPORT, &n_opt, sizeof(n_opt));
 	setsockopt(this->_socket, SOL_SOCKET, SO_DONTROUTE, &opt, sizeof(opt));
@@ -165,4 +175,55 @@ void 		TCP_IP::fresh() {
 
 int 		TCP_IP::get_socket() const {
 	return this->_socket;
+}
+
+
+
+
+
+
+
+/////// class CustomException
+
+
+
+TCP_IP::CustomException::CustomException() throw()
+{
+}
+
+TCP_IP::CustomException::CustomException(CustomException const & ref) throw()
+{
+	*this = ref;
+}
+
+TCP_IP::CustomException::CustomException(eTypeExceptionTCP_IP type) throw()
+{
+    this->type = type;
+}
+
+TCP_IP::CustomException::~CustomException() throw()
+{
+}
+
+// const char*	CustomException::what() const throw()
+// {
+//     eExceptType   te = this->exceptType;
+//
+//     if (te == eExceptType::e_ok)
+//         return "ok";
+//     if (te == eExceptType::e_need_server_work_mod)
+//         return "e_need_server_work_mod";
+//     if (te == eExceptType::e_need_client_work_mod)
+//         return "e_need_client_work_mod";
+//     if (te == eExceptType::e_need_any_work_mod)
+//         return "e_need_any_work_mod";
+//     if (te == eExceptType::e_WAN_wasChange)
+//         return "e_WAN_wasChange";
+//     return "Some error";
+// }
+
+TCP_IP::CustomException	&TCP_IP::CustomException::operator=(CustomException const & ref) throw ()
+{
+	this->type = ref.type;
+	return *this;
 }

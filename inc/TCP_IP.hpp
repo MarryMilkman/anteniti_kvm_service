@@ -3,8 +3,31 @@
 
 #include "lib.h"
 
+enum eTypeExceptionTCP_IP {
+	te_PortInCheck = 0,
+	te_PortInUse,
+	te_SysError
+};
+
+
 class TCP_IP {
 public:
+
+	class CustomException: public std::exception
+	{
+		CustomException() throw();
+	public:
+		~CustomException() throw();
+		CustomException(eTypeExceptionTCP_IP exceptType) throw();
+		CustomException(CustomException const & ref) throw();
+		CustomException &operator=(CustomException const & ref) throw();
+
+	    // virtual const char		*what() const throw();
+		eTypeExceptionTCP_IP	type;
+	};
+
+
+
 	TCP_IP();
 	~TCP_IP();
 	TCP_IP(TCP_IP const &ref);
