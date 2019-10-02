@@ -67,7 +67,9 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 			}
 			std::cerr << serial_number << " data from tunnel.........\n";
 			for (std::string sn_mesh : mesh.list_serial_number) {
+				std::cerr << sn_mesh << "\n";
 				if (sn_mesh == serial_number) {
+					std::cerr << "FIND!!!!!!!!!!!!\n";
 					mesh.tcp_ip->status = 0;
 					mesh.tcp_ip->connected_mac = serial_number;
 					PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse);
