@@ -46,7 +46,8 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 			std::cerr << port << "\n";
 			try {
 				std::lock_guard<std::mutex>	lock(mesh.tcp_ip->s_mutex);
-				if (!mesh.tcp_ip->status) {
+				if (mesh.tcp_ip->is_available) {
+					// if tcp_ip is available => no need to refresh connection (it already is)
 					return;
 				}
 				mesh.tcp_ip->fresh();
@@ -55,29 +56,31 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 
 				mesh.tcp_ip->custom_write(message);
 				serial_number = mesh.tcp_ip->custom_read(1);
-				std::cerr << serial_number << "\n";
 			} catch (TCP_IP::CustomException &exception_tcp_ip) {
 				if (exception_tcp_ip.type == eTypeExceptionTCP_IP::te_PortInCheck) {
 					recheck_port_list.push_back(port);
-					mesh.tcp_ip->status = 1;
+					mesh.tcp_ip->is_available = false;
 					mesh.tcp_ip->custom_disconnect();
 					continue;
 				}
-				mesh.tcp_ip->status = 1;
+				// checked port is already used some tcp_ip....
+				mesh.tcp_ip->is_available = false;
 				mesh.tcp_ip->custom_disconnect();
 				continue;
 			}
 			std::cerr << serial_number << " data from tunnel.........\n";
 			for (std::string sn_mesh : mesh.list_serial_number) {
-				std::cerr << sn_mesh << "\n";
+				// std::cerr << sn_mesh << "\n";
 				if (sn_mesh == serial_number) {
-					mesh.tcp_ip->status = 0;
+					// the desired port was found
+					if (PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse) != eLockStatus::ls_ReservSeccess)
+						break ;
+					mesh.tcp_ip->is_available = true;
 					mesh.tcp_ip->connected_mac = serial_number;
-					PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse);
 					return ;
 				}
 			}
-			mesh.tcp_ip->status = 1;
+			mesh.tcp_ip->is_available = false;
 			mesh.tcp_ip->custom_disconnect();
 		}
 		active_port = recheck_port_list;

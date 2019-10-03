@@ -23,6 +23,9 @@ eLockStatus 		PortController::try_reserv_port(int port, eLockStatus type_lock) {
 	}
 	eLockStatus	status = this->_map_ports[port].lock_status;
 
+	if (type_lock == eLockStatus::ls_LockForUse)
+		return this->_persistent_reserv(port, type_lock);
+
 	if (status == eLockStatus::ls_InUse || status == eLockStatus::ls_InCheck)
 		return status;
 /////////////////////////////
@@ -48,6 +51,16 @@ void 		PortController::unreserv_port(int port) {
 	std::lock_guard<std::mutex>	gu_lock(this->_map_ports[port].p_mutex);
 
 	this->_map_ports[port].lock_status = eLockStatus::ls_Free;
+}
+
+
+eLockStatus 		PortController::_persistent_reserv(int port, eLockStatus type_lock) {
+	std::lock_guard<std::mutex>	gu_lock(this->_map_ports[port].p_mutex);
+
+	if (this->_map_ports[port].lock_status == ls_InUse)
+		return eLockStatus::ls_InUse;
+	this->_map_ports[port].lock_status = type_lock;
+	return eLockStatus::ls_ReservSeccess;
 }
 
 

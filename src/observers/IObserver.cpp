@@ -38,7 +38,7 @@ void 	IObserver::_execute_list_request(std::string message_for_task, eRequestTyp
 		try {
 			request.is_mesh_find = false;
 			Mesh &mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
-			if (!mesh.tcp_ip || mesh.tcp_ip->status)
+			if (!mesh.tcp_ip || !mesh.tcp_ip->is_available)
 				mesh.refresh_connection();
 
 			request.is_mesh_find = true;
@@ -74,17 +74,18 @@ void 		IObserver::_refresh_untreated_list_request(eRequestType type_request) {
 }
 
 //	check every request in _list_untreated_request.
+//		if no task_ptr and no true in flags is_mesh_find
+//			story to mysql request CAN_NOT_FIND_MESH
 //		if task_ptr finish => check tcp_ip (is send/apply executed correct ?
 // 				story to mysql answer and delete request : refresh connection to mesh and try repeat tesk (2 retray))
-//		if no task_ptr
-//			story to mysql request CAN_NOT_FIND_MESH
+//			if answer == INCORRECT_ADDRESSEE
+//					its mean, that current port not valid, and need refresh connection for both mesh
 void 	IObserver::_check_untreated_list_request() {
 	unsigned int 		size = this->_list_untreated_request.size();
 
 	for (unsigned int i = 0; i < size;) {
 		Request 				&request = this->_list_untreated_request[i];
 
-		// std::cerr << request.task_ptr << "\n";
 		if (!request.task_ptr) {
 			if (request.is_mesh_find) {
 				i++;
@@ -108,11 +109,14 @@ void 	IObserver::_check_untreated_list_request() {
 			request.number_check++;
 			if (answer == INCORRECT_ADDRESSEE) {
 				std::cerr << "---------INCORRECT_ADDRESSEE--------try again-----------\n";
-				// try {
+				try {
 
 					Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
-					std::cerr << "HAAAAAAAAAAAAAAAAAAAAAAAAaa\n";
-					incorrect_mesh.tcp_ip->custom_disconnect();
+					{
+						std::cerr << "ATENTION! cen be segmentation prikol\n";
+						std::lock_guard		lock(incorrect_mesh.tcp_ip->s_mutex);
+						incorrect_mesh.tcp_ip->custom_disconnect();
+					}
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
 					mesh.refresh_connection();
 
@@ -124,7 +128,7 @@ void 	IObserver::_check_untreated_list_request() {
 					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
 					i++;
 					continue;
-				// } catch (std::exception &e) {}
+				} catch (std::exception &e) {}
 			}
 
 			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 3)) {
@@ -143,9 +147,6 @@ void 	IObserver::_check_untreated_list_request() {
 					continue;
 				} catch (std::exception &e) {}
 			}
-			// std::stringstream ss_message;
-			// ss_message << request.task_ptr->answer_message << " : " << request.task_ptr << "*" << request.task_ptr->status << "******************\n";
-			// std::cerr << ss_message.str();
 			request.mysql_data->answer_message = request.task_ptr->answer_message;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
 			request.task_ptr->status = eTaskStatus::ts_Used;
@@ -154,9 +155,6 @@ void 	IObserver::_check_untreated_list_request() {
 			size = this->_list_untreated_request.size();
 			continue;
 		}
-		// if (request.number_check > 10) {
-		//
-		// }
 		i++;
 	}
 }

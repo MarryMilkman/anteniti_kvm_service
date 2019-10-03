@@ -45,6 +45,10 @@ private:
 	std::map<int /* number port */, PortController::Port>	_map_ports;
 	std::mutex 												_mutex;
 	// std::map<int /* port */, std::shared_ptr<std::mutex>>	_map_mutex;
+
+	eLockStatus 			_persistent_reserv(int port, eLockStatus type_lock);
+
+
 };
 
 #endif

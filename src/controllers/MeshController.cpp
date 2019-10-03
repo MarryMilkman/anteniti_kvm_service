@@ -24,27 +24,16 @@ MeshController 	&MeshController::getInstance() {
 Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 	// std::cerr << "asdasdasdasd\n";
 	std::map<std::string, std::string> 	map_imei_name;
+	std::string 						imei;
+	std::string 						name_mesh;
 
 	// std::cerr << "SHO?\n";
 	if (!serial_number.size())
 		throw std::exception();
-	std::cerr << "NEED MESH!\n";
-	{
-		std::unique_lock<std::mutex> 	ulock(this->_sn_mutex, std::try_to_lock);
+	map_imei_name = this->_mysql_controller.get_imei_and_name_by_serial_number(serial_number);
+	imei = map_imei_name["imei"];
+	name_mesh = map_imei_name["name_mesh"];
 
-		std::cerr << serial_number << "\n";
-		if (ulock.owns_lock())
-			map_imei_name = this->_mysql_controller.get_imei_and_name_by_serial_number(serial_number);
-		else
-			std::lock_guard<std::mutex>		lock(this->_sn_mutex);
-	}
-	std::string 						imei = map_imei_name["imei"];
-	std::string 						name_mesh = map_imei_name["name_mesh"];
-
-	std::cerr << imei << "\n";
-	std::cerr << name_mesh << "\n";
-
-	// std::cerr << "asdasdasd\n";
 	if (!imei.size() || !name_mesh.size())
 		throw std::exception();
 	if (!_map_mutex.count(imei)) {
@@ -61,10 +50,6 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 	}
 	if (this->_map_mesh[imei].count(name_mesh))
 		return this->_map_mesh[imei][name_mesh];
-	// for (Mesh &mesh : this->_map_mesh[imei])
-	// 	if (mesh.name == name_mesh)
-	// 		return mesh;
-	std::cerr << "asdasdasd----------------\n";
 	throw std::exception();
 }
 
@@ -75,7 +60,6 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 //			if found - story new mesh to _map_mesh and refresh this connection
 //			if not_found - make exception
 Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
-	std::cerr << "NEED MESH!\n";
 	if (!imei.size() || !name_mesh.size())
 		throw std::exception();
 	if (!_map_mutex.count(imei)) {
@@ -92,9 +76,6 @@ Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	}
 	if (this->_map_mesh[imei].count(name_mesh))
 		return this->_map_mesh[imei][name_mesh];
-	// for (Mesh &mesh : this->_map_mesh[imei])
-	// 	if (mesh.name == name_mesh)
-	// 		return mesh;
 	throw std::exception();
 }
 

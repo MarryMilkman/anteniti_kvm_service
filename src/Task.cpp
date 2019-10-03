@@ -49,8 +49,10 @@ void 		Task::operator()() {
 	std::cerr << "TASK START!\n";
 	this->status = ts_InProgres;
 	try {
+		if (!this->tcp_ip)
+			throw std::exception();
 		std::lock_guard<std::mutex>	lock(this->tcp_ip->s_mutex);
-		if (!this->tcp_ip || this->tcp_ip->status)
+		if (!this->tcp_ip->is_available)
 			throw std::exception();
 		// std::cerr << "start do task, memory addr tcp_ip:" << this->tcp_ip << ", title:" << title << "\n";
 
@@ -66,7 +68,7 @@ void 		Task::operator()() {
 	} catch (std::exception &e) {
 		if (this->tcp_ip) {
 			this->tcp_ip->custom_disconnect();
-			this->tcp_ip->status = 1;
+			this->tcp_ip->is_available = false;
 		}
 		// this->tcp_ip = 0;
 		std::cerr << "TASK_FAIL_BROKEN_TCP_IP\n";

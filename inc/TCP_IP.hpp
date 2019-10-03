@@ -43,7 +43,7 @@ public:
 
 	std::mutex 		s_mutex;
 	std::string 	connected_mac;
-	int 			status;
+	bool 			is_available;
 
 private:
 	int 				_socket;
