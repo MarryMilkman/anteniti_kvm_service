@@ -114,7 +114,7 @@ void 	IObserver::_check_untreated_list_request() {
 					Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
 					{
 						std::cerr << "ATENTION! cen be segmentation prikol\n";
-						std::lock_guard		lock(incorrect_mesh.tcp_ip->s_mutex);
+						std::lock_guard<std::mutex>		lock(incorrect_mesh.tcp_ip->s_mutex);
 						incorrect_mesh.tcp_ip->custom_disconnect();
 					}
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
