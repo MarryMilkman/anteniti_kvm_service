@@ -29,6 +29,8 @@ public:
 	static MySQLController	&getInstance();
 
 	std::string 									get_meshes_info_by_imei(std::string imei);
+	std::map<std::string, std::string> 				get_imei_and_name_by_serial_number(std::string serial_number);
+
 	std::vector<std::shared_ptr<MySQLDataSegment>>	get_request(eRequestType type_request);
 	bool 											story(std::shared_ptr<MySQLDataSegment> data_segment);
 

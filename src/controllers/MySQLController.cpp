@@ -350,3 +350,38 @@ std::string		MySQLController::get_meshes_info_by_imei(std::string imei) {
 	}
 	return r_str;
 }
+
+std::map<std::string, std::string> 				MySQLController::get_imei_and_name_by_serial_number(std::string serial_number) {
+	std::stringstream 					ss_sql_requeset;
+	std::map<std::string, std::string>	r_map;
+	sql::ResultSet 						*result = 0;
+
+	if (!this->_connector || !this->_statement) {
+		this->_init_connection();
+		if (!this->_connector || !this->_statement)
+			return r_map;
+	}
+	ss_sql_requeset << "SELECT IMEI, NETWORK FROM DEVICESN WHERE SN = \'" << serial_number <<"\'";
+	try {
+		// std::cerr << ss_sql_requeset.str() << "\n----------\n";
+		{
+			std::lock_guard<std::mutex> execut_lock(this->_mutex_for_execute);
+			result = this->_statement->executeQuery(ss_sql_requeset.str());
+		}
+		while (result && result->next()) {
+			r_map["imei"] = result->getString("IMEI");
+			r_map["name_mesh"] = result->getString("NETWORK");
+			// std::cerr << "result line: " << r_str << "\n";
+		}
+		if (result) {
+			// std::cerr << "delete result in MySQLController MySQLController::get_meshes_info_by_imei\n";
+			delete result;
+		}
+	}
+	catch (sql::SQLException &e) {
+		std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
+		if (e.getErrorCode() == 2006)
+			this->_init_connection();
+	}
+	return r_map;
+}

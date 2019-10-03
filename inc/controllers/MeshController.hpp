@@ -18,13 +18,16 @@ public:
 	void 		operator()();
 
 	Mesh 		&get_mesh_by(std::string imei, std::string name_mesh);
+	Mesh 		&get_mesh_by(std::string serial_number);
 	void 		refresh_connection(Mesh &mesh);
 
 private:
-	std::map<std::string /* imei */, std::shared_ptr<std::mutex>>			_map_mutex;
-	MySQLController								&_mysql_controller;
-	MeshConnectionController					&_mesh_connection_controller;
-	std::map<std::string  /* imei */, std::vector<Mesh>>	_map_mesh;
+	std::mutex 					_sn_mutex;
+	MySQLController				&_mysql_controller;
+	MeshConnectionController	&_mesh_connection_controller;
+
+	std::map<std::string  /* imei */, std::map<std::string  /* name */, Mesh>>	_map_mesh;
+	std::map<std::string /* imei */, std::shared_ptr<std::mutex>>				_map_mutex;
 
 	void 						_registered_new_mesh(std::string imei);
 };

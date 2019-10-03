@@ -35,6 +35,7 @@ enum eRequestType {
 	// rt_NewRoutersRequest
 };
 
+#define INCORRECT_ADDRESSEE "Incorrect_addressee"
 
 #define PATH_VARIABLE_SETTING "/tmp/new_setting"
 

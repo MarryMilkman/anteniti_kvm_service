@@ -14,6 +14,8 @@ for uses need override    operator();
 #include "MySQLDataSegment.hpp"
 #include "Mesh.hpp"
 #include "Loger.hpp"
+#include "Parser.hpp"
+#include "TCP_IP.hpp"
 
 IObserver::IObserver() :
 	_mysql_controller(MySQLController::getInstance()),
@@ -95,14 +97,33 @@ void 	IObserver::_check_untreated_list_request() {
 			size = this->_list_untreated_request.size();
 			continue;
 		}
-		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
-			request.number_check++;
-			std::cerr << "request.task_ptr->status >= eTaskStatus::ts_Finish" << "\n";
-			// std::cerr << request.number_check << " ------ number check\n";
-			if (request.task_ptr->answer_message == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2) {
-				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP----try apply request again----------------\n";
 
-				std::shared_ptr<Task> task_ptr = request.task_ptr;
+		if (request.task_ptr->status >= eTaskStatus::ts_Finish) {
+			std::vector<std::string>	answer_segment = Parser::custom_split(request.task_ptr->answer_message, " ");
+			std::string 				answer = answer_segment[0];
+			std::shared_ptr<Task> 		&task_ptr = request.task_ptr;
+
+			request.number_check++;
+			if (answer == INCORRECT_ADDRESSEE) {
+				Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
+				incorrect_mesh.tcp_ip->custom_disconnect();
+				Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
+				mesh.refresh_connection();
+
+				std::string 	title = task_ptr->title;
+				std::string 	message = task_ptr->message;
+				int 			timeout = task_ptr->timeout;
+
+				request.task_ptr->status = eTaskStatus::ts_Used;
+				request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
+				i++;
+				continue;
+
+			}
+
+			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2)) {
+				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP || INCORRECT_ADDRESSEE ----try apply request again----------------\n";
+
 				try {
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
 					this->_mesh_controller.refresh_connection(mesh);
