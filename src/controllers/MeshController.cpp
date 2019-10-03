@@ -22,22 +22,29 @@ MeshController 	&MeshController::getInstance() {
 }
 
 Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
+	// std::cerr << "asdasdasdasd\n";
 	std::map<std::string, std::string> 	map_imei_name;
 
+	// std::cerr << "SHO?\n";
 	if (!serial_number.size())
 		throw std::exception();
 	std::cerr << "NEED MESH!\n";
 	{
 		std::unique_lock<std::mutex> 	ulock(this->_sn_mutex, std::try_to_lock);
 
+		std::cerr << serial_number << "\n";
 		if (ulock.owns_lock())
-			std::map<std::string, std::string> 	map_imei_name = this->_mysql_controller.get_imei_and_name_by_serial_number(serial_number);
+			map_imei_name = this->_mysql_controller.get_imei_and_name_by_serial_number(serial_number);
 		else
 			std::lock_guard<std::mutex>		lock(this->_sn_mutex);
 	}
 	std::string 						imei = map_imei_name["imei"];
 	std::string 						name_mesh = map_imei_name["name_mesh"];
 
+	std::cerr << imei << "\n";
+	std::cerr << name_mesh << "\n";
+
+	// std::cerr << "asdasdasd\n";
 	if (!imei.size() || !name_mesh.size())
 		throw std::exception();
 	if (!_map_mutex.count(imei)) {
@@ -57,6 +64,7 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 	// for (Mesh &mesh : this->_map_mesh[imei])
 	// 	if (mesh.name == name_mesh)
 	// 		return mesh;
+	std::cerr << "asdasdasd----------------\n";
 	throw std::exception();
 }
 

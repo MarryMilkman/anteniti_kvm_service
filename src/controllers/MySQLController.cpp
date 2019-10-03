@@ -372,6 +372,8 @@ std::map<std::string, std::string> 				MySQLController::get_imei_and_name_by_ser
 			r_map["imei"] = result->getString("IMEI");
 			r_map["name_mesh"] = result->getString("NETWORK");
 			// std::cerr << "result line: " << r_str << "\n";
+			std::cerr << "from mysql: " << r_map["imei"] << "\n";
+			std::cerr << "from mysql: " << r_map["name_mesh"] << "\n";
 		}
 		if (result) {
 			// std::cerr << "delete result in MySQLController MySQLController::get_meshes_info_by_imei\n";
@@ -383,5 +385,7 @@ std::map<std::string, std::string> 				MySQLController::get_imei_and_name_by_ser
 		if (e.getErrorCode() == 2006)
 			this->_init_connection();
 	}
+	std::cerr << "from mysql2: " << r_map["imei"] << "\n";
+	std::cerr << "from mysql2: " << r_map["name_mesh"] << "\n";
 	return r_map;
 }

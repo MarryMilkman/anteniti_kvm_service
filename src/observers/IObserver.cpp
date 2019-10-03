@@ -107,24 +107,27 @@ void 	IObserver::_check_untreated_list_request() {
 
 			request.number_check++;
 			if (answer == INCORRECT_ADDRESSEE) {
-				std::cerr << "---------INCORRECT_ADDRESSEE--------try again-----------";
-				Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
-				incorrect_mesh.tcp_ip->custom_disconnect();
-				Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
-				mesh.refresh_connection();
+				std::cerr << "---------INCORRECT_ADDRESSEE--------try again-----------\n";
+				// try {
 
-				std::string 	title = task_ptr->title;
-				std::string 	message = task_ptr->message;
-				int 			timeout = task_ptr->timeout;
+					Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
+					std::cerr << "HAAAAAAAAAAAAAAAAAAAAAAAAaa\n";
+					incorrect_mesh.tcp_ip->custom_disconnect();
+					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
+					mesh.refresh_connection();
 
-				request.task_ptr->status = eTaskStatus::ts_Used;
-				request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
-				i++;
-				continue;
+					std::string 	title = task_ptr->title;
+					std::string 	message = task_ptr->message;
+					int 			timeout = task_ptr->timeout;
 
+					request.task_ptr->status = eTaskStatus::ts_Used;
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
+					i++;
+					continue;
+				// } catch (std::exception &e) {}
 			}
 
-			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2)) {
+			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 3)) {
 				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP ----try apply request again----------------\n";
 
 				try {
