@@ -4,7 +4,7 @@
 TCP_IP::TCP_IP() {
 	this->_port = 0;
 	this->_socket = 0;
-	this->status = 0;
+	this->status = 1;
 	std::stringstream	ss;
 
 	ss << this << " New TCP_IP created\n";

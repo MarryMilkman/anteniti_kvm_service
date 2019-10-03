@@ -29,7 +29,7 @@ SettingObserver	&SettingObserver::getInstance() {
 
 void 	SettingObserver::operator()() {
 	while (1) {
-		this->_execute_list_request(SETTING_CHANGED, eRequestType::rt_SettingRequest);
+		this->_execute_list_request(SETTING_CHANGED, eRequestType::rt_SettingRequest, 10);
 		this->_check_untreated_list_request();
 	}
 }

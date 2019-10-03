@@ -29,7 +29,7 @@ BlockingObserver	&BlockingObserver::getInstance() {
 
 void 	BlockingObserver::operator()() {
 	while (1) {
-		this->_execute_list_request(BLOCKLIST_CHANGE, eRequestType::rt_BlockRequest);
+		this->_execute_list_request(BLOCKLIST_CHANGE, eRequestType::rt_BlockRequest, 30);
 			// virtual method (override)
 		this->_check_untreated_list_request();
 	}

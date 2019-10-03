@@ -43,10 +43,12 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 			std::string 	data_from_tunnel;
 			std::string		serial_number;
 
+			std::cerr << port << "\n";
 			try {
 				std::lock_guard<std::mutex>	lock(mesh.tcp_ip->s_mutex);
-				if (!mesh.tcp_ip->status)
-				return;
+				if (!mesh.tcp_ip->status) {
+					return;
+				}
 				mesh.tcp_ip->fresh();
 				mesh.tcp_ip->custom_connect("127.0.0.1", port);
 				std::string 		message = "Command\n***DELIM***\n" SEND_MAC;
@@ -67,6 +69,7 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 			}
 			std::cerr << serial_number << " data from tunnel.........\n";
 			for (std::string sn_mesh : mesh.list_serial_number) {
+				std::cerr << sn_mesh << "\n";
 				if (sn_mesh == serial_number) {
 					mesh.tcp_ip->status = 0;
 					mesh.tcp_ip->connected_mac = serial_number;

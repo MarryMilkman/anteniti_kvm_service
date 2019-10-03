@@ -30,7 +30,7 @@ InfoObserver	&InfoObserver::getInstance() {
 void 	InfoObserver::operator()() {
 	while (1) {
 		// std::cerr << "jojo\n";
-		this->_execute_list_request(SEND_INFO, eRequestType::rt_InfoRequest);
+		this->_execute_list_request(SEND_INFO, eRequestType::rt_InfoRequest, 2);
 		this->_check_untreated_list_request();
 	}
 }

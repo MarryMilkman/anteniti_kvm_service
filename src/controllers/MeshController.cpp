@@ -68,13 +68,6 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 //			if not_found - make exception
 Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	std::cerr << "NEED MESH!\n";
-	// for (Mesh &mesh : this->_map_mesh[imei])
-	// 	if (mesh.name == name_mesh) {
-	// 		if (!mesh.tcp_ip)
-	// 			this->_mesh_connection_controller.find_connection(mesh);
-	// 		return mesh;
-	// 	}
-		// need_realiz
 	if (!imei.size() || !name_mesh.size())
 		throw std::exception();
 	if (!_map_mutex.count(imei)) {

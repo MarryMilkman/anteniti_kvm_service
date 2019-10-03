@@ -30,7 +30,7 @@ protected:
 
 	void 			_refresh_untreated_list_request(eRequestType type_request);
 	void 			_check_untreated_list_request();
-	void 			_execute_list_request(std::string message_for_task, eRequestType type_request);
+	void 			_execute_list_request(std::string message_for_task, eRequestType type_request, int timeout);
 };
 
 #endif
