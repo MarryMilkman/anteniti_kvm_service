@@ -2,6 +2,7 @@
 #include "controllers/PortController.hpp"
 
 TCP_IP::TCP_IP() {
+	time(&this->_last_time_activity);
 	this->_port = 0;
 	this->_socket = 0;
 	this->is_available = false;
@@ -33,13 +34,14 @@ TCP_IP	&TCP_IP::operator=(TCP_IP const & ref) {
 
 	// connect
 void 		TCP_IP::custom_connect(std::string ip, int port) {
-	this->_port = port;
 	std::stringstream	ss;
 	eLockStatus 		lock_status;
 
+	time(&this->_last_time_activity);
+	this->_port = port;
 	ss << this << " ..................connect..................\n";
 	std::cerr << ss.str();
-	lock_status = PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForCheck);
+	lock_status = PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForCheck, std::shared_ptr<TCP_IP>(this));
 
 	if (lock_status != eLockStatus::ls_ReservSeccess) {
 		if (lock_status == eLockStatus::ls_InCheck)
@@ -69,6 +71,7 @@ void 		TCP_IP::custom_connect(std::string ip, int port) {
 std::string	TCP_IP::custom_read(int timeout) {
 	std::stringstream	ss;
 
+	time(&this->_last_time_activity);
 	ss << this << " ..................read..................\n";
 	std::cerr << ss.str();
 
@@ -94,6 +97,7 @@ std::string	TCP_IP::custom_read(int timeout) {
 void 		TCP_IP::custom_write(std::string message) {
 	std::stringstream	ss;
 
+	time(&this->_last_time_activity);
 	ss << this << " ..................write..................\n";
 	std::cerr << ss.str();
 
@@ -126,6 +130,7 @@ void 		TCP_IP::custom_write(std::string message) {
 void 		TCP_IP::custom_disconnect() {
 	std::stringstream	ss;
 
+	time(&this->_last_time_activity);
 	ss << this << "  ..................disconnect from port:" << this->_port << "\n";
 	std::cerr << ss.str();
 	PortController::getInstance().unreserv_port(this->_port);
@@ -137,13 +142,13 @@ void 		TCP_IP::custom_disconnect() {
 
 
 void 		TCP_IP::_init(std::string ip, int port) {
-	int     opt = 1;
-
+	int     			opt = 1;
 	std::stringstream	ss;
 
 	ss << this << " ..................init..................\n";
 	std::cerr << ss.str();
 
+	time(&this->_last_time_activity);
 	if (this->_socket > 0) {
 		close(this->_socket);
 		this->_socket = 0;
@@ -164,6 +169,7 @@ void 		TCP_IP::fresh() {
 
 	std::stringstream	ss;
 
+	time(&this->_last_time_activity);
 	ss << this << " ..................fresh..................\n";
 	std::cerr << ss.str();
 	PortController::getInstance().unreserv_port(this->_port);
@@ -177,6 +183,9 @@ int 		TCP_IP::get_socket() const {
 	return this->_socket;
 }
 
+time_t 		TCP_IP::get_last_time_activity() {
+	return this->_last_time_activity;
+}
 
 
 

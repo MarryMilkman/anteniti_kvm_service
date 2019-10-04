@@ -33,6 +33,8 @@ public:
 	TCP_IP(TCP_IP const &ref);
 	TCP_IP &operator=(TCP_IP const &ref);
 
+	time_t 		get_last_time_activity();
+
 	void 		custom_connect(std::string ip, int port);
 	std::string	custom_read(int timeout);
 	void 		custom_write(std::string message);
@@ -49,6 +51,7 @@ private:
 	int 				_socket;
 	struct sockaddr_in	_addres;
 	int 				_port;
+	time_t 				_last_time_activity;
 
 	void 				_init(std::string ip, int port);
 
