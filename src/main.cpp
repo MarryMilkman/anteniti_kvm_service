@@ -13,7 +13,7 @@ int main() {
 		// MySQLController init
 	MySQLController::getInstance();
 		//PortController init
-	PortController::getInstance();
+	PortController		&_port_controller = PortController::getInstance();
 		// MeshController init
 	MeshController::getInstance();
 		// BlockingObserver init
@@ -28,6 +28,8 @@ int main() {
 	std::thread 	thread_setting_observer(std::ref(_setting_observer));
 
 	std::cerr << "start join....\n";
+
+	_port_controller.watch_used_port();
 	//
 	if (thread_info_observer.joinable())
 		thread_info_observer.join();

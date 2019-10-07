@@ -73,7 +73,7 @@ void		MeshConnectionController::find_connection(Mesh &mesh) {
 				// std::cerr << sn_mesh << "\n";
 				if (sn_mesh == serial_number) {
 					// the desired port was found
-					if (PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse) != eLockStatus::ls_ReservSeccess)
+					if (PortController::getInstance().try_reserv_port(port, eLockStatus::ls_LockForUse, mesh.tcp_ip) != eLockStatus::ls_ReservSeccess)
 						break ;
 					mesh.tcp_ip->is_available = true;
 					mesh.tcp_ip->connected_mac = serial_number;
