@@ -5,7 +5,7 @@
 
 class TCP_IP;
 
-#define TASK_FAIL_BROKEN_TCP_IP "task failed: broken tcp_ip connection"
+#define TASK_FAIL_BROKEN_TCP_IP "task_failed:_broken_tcp_ip_connection"
 
 enum 	eTaskStatus {
 	ts_Created = 0,

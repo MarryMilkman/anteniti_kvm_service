@@ -131,7 +131,7 @@ void 	IObserver::_check_untreated_list_request() {
 				} catch (std::exception &e) {}
 			}
 
-			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 3)) {
+			if ( (answer == TASK_FAIL_BROKEN_TCP_IP && request.number_check < 2)) {
 				std::cerr << "---TASK_FAIL_BROKEN_TCP_IP ----try apply request again----------------\n";
 
 				try {

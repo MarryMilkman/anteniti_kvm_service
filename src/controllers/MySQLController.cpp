@@ -235,7 +235,8 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_set
 // update all request from db. if have some new request with type == question -> return true
 bool			MySQLController::_update_all_list(eRequestType question) {
 	bool 				q = false;
-	int 				max_ip = -1;
+	std::vector<int>	list_id;
+	// int 				max_id = -1;
 	std::stringstream 	ss_sql_requeset;
 	sql::ResultSet 		*result = 0;
 
@@ -267,8 +268,8 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 			} catch (std::exception &e) {
 				data_segment->status = -1;
 			}
-			if (data_segment->id > max_ip)
-			max_ip = data_segment->id;
+			if (data_segment->id >= 0)
+				list_id.push_back(data_segment->id);
 			if (s_type == "setting") {
 				if (question == rt_SettingRequest)
 				q = true;
@@ -295,9 +296,16 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 		if (result) {
 			delete result;
 		}
-		if (max_ip >= 0) {
+		if (list_id.size() > 0) {
 			ss_sql_requeset.str(std::string());
-			ss_sql_requeset << "UPDATE KVM SET Status = \'1\' WHERE ID < \'" << max_ip + 1 << "\' AND Status = \'0\'";
+			// ss_sql_requeset << "UPDATE KVM SET Status = \'1\' WHERE ID < \'" << max_id + 1 << "\' AND Status = \'0\'";
+			ss_sql_requeset << "UPDATE KVM SET Status = \'1\' WHERE ID = ";
+
+			for (int i = 0, size = list_id.size(); i < size; i++) {
+				ss_sql_requeset << list_id[i];
+				if (i + 1 < size)
+					ss_sql_requeset << " OR ID = ";
+			}
 			std::cerr << ss_sql_requeset.str() << "\n";
 			{
 				std::lock_guard<std::mutex> execut_lock(this->_mutex_for_execute);
