@@ -32,15 +32,17 @@ set(SRC
 		${SRC_DIRECTORY}/ScriptExecutor.cpp
 		${SRC_DIRECTORY}/MySQLDataSegment.cpp
 		${SRC_DIRECTORY}/TCP_IP.cpp
+		${SRC_DIRECTORY}/Tunnel.cpp
 		${SRC_DIRECTORY}/Mesh.cpp
 		${SRC_DIRECTORY}/Task.cpp
 		${SRC_DIRECTORY}/Request.cpp
 
 		${SRC_DIRECTORY}/controllers/MySQLController.cpp
 		${SRC_DIRECTORY}/controllers/TaskController.cpp
-		${SRC_DIRECTORY}/controllers/MeshConnectionController.cpp
+		# ${SRC_DIRECTORY}/controllers/MeshConnectionController.cpp
 		${SRC_DIRECTORY}/controllers/MeshController.cpp
 		${SRC_DIRECTORY}/controllers/PortController.cpp
+		${SRC_DIRECTORY}/controllers/TunnelController.cpp
 
 		${SRC_DIRECTORY}/observers/IObserver.cpp
 		${SRC_DIRECTORY}/observers/InfoObserver.cpp

@@ -15,7 +15,7 @@ for uses need override    operator();
 #include "Mesh.hpp"
 #include "Loger.hpp"
 #include "Parser.hpp"
-#include "TCP_IP.hpp"
+#include "Tunnel.hpp"
 
 IObserver::IObserver() :
 	_mysql_controller(MySQLController::getInstance()),
@@ -38,7 +38,7 @@ void 	IObserver::_execute_list_request(std::string message_for_task, eRequestTyp
 		try {
 			request.is_mesh_find = false;
 			Mesh &mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
-			if (!mesh.tcp_ip || !mesh.tcp_ip->is_available)
+			if (!mesh.tunnel || !mesh.tunnel->is_available)
 				mesh.refresh_connection();
 
 			request.is_mesh_find = true;
@@ -49,7 +49,7 @@ void 	IObserver::_execute_list_request(std::string message_for_task, eRequestTyp
 			message = std::string("Command") + std::string("-") + mesh.list_serial_number[0] + std::string("\n***DELIM***\n");
 			message += message_for_task;
 			// while (!request.task_ptr)
-				request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
+			request.task_ptr = this->_task_controller.make_new_task(title, mesh.tunnel, message, timeout);
 		} catch (std::exception &e) {
 			continue;
 		}
@@ -76,7 +76,7 @@ void 		IObserver::_refresh_untreated_list_request(eRequestType type_request) {
 //	check every request in _list_untreated_request.
 //		if no task_ptr and no true in flags is_mesh_find
 //			story to mysql request CAN_NOT_FIND_MESH
-//		if task_ptr finish => check tcp_ip (is send/apply executed correct ?
+//		if task_ptr finish => check tunnel (is send/apply executed correct ?
 // 				story to mysql answer and delete request : refresh connection to mesh and try repeat tesk (2 retray))
 //			if answer == INCORRECT_ADDRESSEE
 //					its mean, that current port not valid, and need refresh connection for both mesh
@@ -95,7 +95,7 @@ void 	IObserver::_check_untreated_list_request() {
 			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
 			request.mysql_data->status = eRequestStatus::rs_Finish;
 			this->_mysql_controller.story(request.mysql_data);
-			// request.task_ptr = this->_task_controller.make_new_task(request.itle, mesh.tcp_ip, request.message);
+			// request.task_ptr = this->_task_controller.make_new_task(request.itle, mesh.tunnel, request.message);
 			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
 			size = this->_list_untreated_request.size();
 			continue;
@@ -114,8 +114,9 @@ void 	IObserver::_check_untreated_list_request() {
 					Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
 					{
 						std::cerr << "ATENTION! cen be segmentation prikol\n";
-						std::lock_guard<std::mutex>		lock(incorrect_mesh.tcp_ip->s_mutex);
-						incorrect_mesh.tcp_ip->custom_disconnect();
+						std::lock_guard<std::mutex>		lock(incorrect_mesh.tunnel->s_mutex);
+						incorrect_mesh.tunnel->is_available = false;
+						incorrect_mesh.tunnel = 0;
 					}
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
 					mesh.refresh_connection();
@@ -125,7 +126,7 @@ void 	IObserver::_check_untreated_list_request() {
 					int 			timeout = task_ptr->timeout;
 
 					request.task_ptr->status = eTaskStatus::ts_Used;
-					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tunnel, message, timeout);
 					i++;
 					continue;
 				} catch (std::exception &e) {}
@@ -136,13 +137,13 @@ void 	IObserver::_check_untreated_list_request() {
 
 				try {
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
-					this->_mesh_controller.refresh_connection(mesh);
+					mesh.refresh_connection();
 					std::string 	title = task_ptr->title;
 					std::string 	message = task_ptr->message;
 					int 			timeout = task_ptr->timeout;
 
 					request.task_ptr->status = eTaskStatus::ts_Used;
-					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tcp_ip, message, timeout);
+					request.task_ptr = this->_task_controller.make_new_task(title, mesh.tunnel, message, timeout);
 					i++;
 					continue;
 				} catch (std::exception &e) {}

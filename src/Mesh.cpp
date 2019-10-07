@@ -1,15 +1,15 @@
 #include "Mesh.hpp"
-#include "controllers/MeshConnectionController.hpp"
-#include "TCP_IP.hpp"
+#include "controllers/TunnelController.hpp"
+#include "Tunnel.hpp"
 
-Mesh::Mesh() {
+Mesh::Mesh() :
+	tunnel(0)
+{
 	std::cerr << "Create new MESH!\n";
-	this->tcp_ip = 0;
 }
 
 Mesh::~Mesh() {
-	// if (this->tcp_ip)
-	this->tcp_ip = 0;
+	this->tunnel = 0;
 }
 
 Mesh::Mesh(Mesh const & ref) {
@@ -17,7 +17,7 @@ Mesh::Mesh(Mesh const & ref) {
 }
 
 Mesh 	&Mesh::operator=(Mesh const & ref) {
-	this->tcp_ip = ref.tcp_ip;
+	this->tunnel = ref.tunnel;
 	this->list_serial_number.clear();
 	for (std::string sn : ref.list_serial_number)
 		this->list_serial_number.push_back(sn);
@@ -42,6 +42,29 @@ bool 	Mesh::operator==(Mesh const & ref) {
 	return true;
 }
 
-void 		Mesh::refresh_connection() {
-	MeshConnectionController::getInstance().find_connection(*this);
+void		Mesh::refresh_connection() {
+	std::unique_lock<std::mutex> lock(this->_refresh_connection_mutex, std::try_to_lock);
+
+	if (!lock.owns_lock()) {
+		std::lock_guard<std::mutex> llock(this->_refresh_connection_mutex);
+		return ;
+	}
+	if (!this->list_serial_number.size())
+		return ;
+	std::vector<std::shared_ptr<Tunnel>>	list_active_tunnel = TunnelController::getInstance().get_list_active_tunnel();
+
+	this->tunnel = 0;
+	// std::cerr << list_active_tunnel.size() << " active port\n";
+	for (std::shared_ptr<Tunnel> tunnel : list_active_tunnel) {
+		// std::cerr << "tunnel->dest_mac " << tunnel->dest_mac << "\n";
+		if (tunnel->is_available) {
+			for (std::string sn_mesh : this->list_serial_number) {
+				if (tunnel->dest_mac == sn_mesh) {
+					std::cerr << sn_mesh << " - find mesh\n";
+					this->tunnel = tunnel;
+					return;
+				}
+			}
+		}
+	}
 }

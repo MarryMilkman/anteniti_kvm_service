@@ -1,4 +1,5 @@
 #include "controllers/TaskController.hpp"
+#include "Tunnel.hpp"
 
 
 TaskController::TaskController() {
@@ -18,14 +19,14 @@ TaskController	&TaskController::getInstance() {
 	// make_new_task - get task from pool of task (_pull_task[MAX_TASK])
 	//	if no free task in pool -> return 0
 	//	else make new thread, and story tham to Task.thread_, then return Task
-std::shared_ptr<Task>	TaskController::make_new_task(std::string title, std::shared_ptr<TCP_IP> &tcp_ip, std::string message, int timeout) {
+std::shared_ptr<Task>	TaskController::make_new_task(std::string title, std::shared_ptr<Tunnel> tunnel, std::string message, int timeout) {
 	int 		i = 0;
 
 	// this->_refresh_pull();
 	while (i < MAX_TASK) {
 		if (!this->_pull_task[i].task_ptr || this->_pull_task[i].task_ptr->status == eTaskStatus::ts_Used) {
 			this->_pull_task[i] = TaskController::CustomThread();
-			this->_pull_task[i].task_ptr = std::shared_ptr<Task>(new Task(title, tcp_ip, message, timeout));
+			this->_pull_task[i].task_ptr = std::shared_ptr<Task>(new Task(title, tunnel, message, timeout));
 			this->_pull_task[i].thread_ = std::thread(std::ref(*this->_pull_task[i].task_ptr.get()));
 			this->_pull_task[i].thread_.detach();
 			std::cerr << "TsakController return " << i << " thread from puul\n";

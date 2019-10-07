@@ -1,13 +1,11 @@
 #include "controllers/MeshController.hpp"
-#include "controllers/MeshConnectionController.hpp"
 #include "controllers/MySQLController.hpp"
 #include "Mesh.hpp"
 #include "TCP_IP.hpp"
 #include "Parser.hpp"
 
 MeshController::MeshController() :
-	_mysql_controller(MySQLController::getInstance()),
-	_mesh_connection_controller(MeshConnectionController::getInstance())
+	_mysql_controller(MySQLController::getInstance())
 {
 }
 
@@ -33,24 +31,7 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 	map_imei_name = this->_mysql_controller.get_imei_and_name_by_serial_number(serial_number);
 	imei = map_imei_name["imei"];
 	name_mesh = map_imei_name["name_mesh"];
-
-	if (!imei.size() || !name_mesh.size())
-		throw std::exception();
-	if (!_map_mutex.count(imei)) {
-		_map_mutex[imei] = std::shared_ptr<std::mutex>(new std::mutex());
-	}
-
-	{
-		std::unique_lock<std::mutex> 	ulock(*this->_map_mutex[imei], std::try_to_lock);
-
-		if (ulock.owns_lock())
-			this->_registered_new_mesh(imei);
-		else
-			std::lock_guard<std::mutex>		lock(*this->_map_mutex[imei]);
-	}
-	if (this->_map_mesh[imei].count(name_mesh))
-		return this->_map_mesh[imei][name_mesh];
-	throw std::exception();
+	return	this->get_mesh_by(imei, name_mesh);
 }
 
 
@@ -69,8 +50,9 @@ Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
 	{
 		std::unique_lock<std::mutex> 	ulock(*this->_map_mutex[imei], std::try_to_lock);
 
-		if (ulock.owns_lock())
+		if (ulock.owns_lock()) {
 			this->_registered_new_mesh(imei);
+		}
 		else
 			std::lock_guard<std::mutex>		lock(*this->_map_mutex[imei]);
 	}
@@ -87,7 +69,7 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 	for (Mesh &mesh : list_new_mesh) {
 		Mesh &old_mesh = this->_map_mesh[imei][mesh.name];
 		if (!(old_mesh == mesh)) {
-			this->refresh_connection(mesh);
+			mesh.refresh_connection();
 			this->_map_mesh[imei][mesh.name] = mesh;
 		}
 	}
@@ -95,8 +77,8 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 
 
 //	use _mesh_connection_controller.find_connection for refresh connection of mesh
-void 		MeshController::refresh_connection(Mesh &mesh) {
-	std::cerr << "refresh_connection\n";
-
-	this->_mesh_connection_controller.find_connection(mesh);
-}
+// void 		MeshController::refresh_connection(Mesh &mesh) {
+// 	std::cerr << "refresh_connection\n";
+//
+// 	this->_mesh_connection_controller.find_connection(mesh);
+// }

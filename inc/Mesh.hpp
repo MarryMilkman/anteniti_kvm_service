@@ -3,7 +3,7 @@
 
 #include "lib.h"
 
-class 	TCP_IP;
+class 	Tunnel;
 
 class Mesh {
 public:
@@ -16,8 +16,7 @@ public:
 	std::string 				imei;
 	std::string 				name;
 	std::vector<std::string>	list_serial_number;
-	std::shared_ptr<TCP_IP>		tcp_ip;
-	std::mutex 					refresh_connection_mutex;
+	std::shared_ptr<Tunnel>		tunnel;
 
 	void 						refresh_connection();
 	// std::vector<std::string> 	&get_serial_numbers() const;
@@ -25,6 +24,9 @@ public:
 
 	// TCP_IP_Worker 				*get_tcp_ip();
 	// void 						refresh_tcp_ip(TCP_IP_Worker *new_tcp_ip);
+private:
+	std::mutex 					_refresh_connection_mutex;
+
 };
 
 #endif

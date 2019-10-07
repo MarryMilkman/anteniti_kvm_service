@@ -2,6 +2,7 @@
 #include "controllers/MySQLController.hpp"
 #include "controllers/MeshController.hpp"
 #include "controllers/PortController.hpp"
+#include "controllers/TunnelController.hpp"
 
 #include "observers/BlockingObserver.hpp"
 #include "observers/SettingObserver.hpp"
@@ -10,6 +11,8 @@
 int main() {
 	signal(SIGPIPE, SIG_IGN);
 
+		// TunnelController
+	TunnelController 	&_tunnel_controller = TunnelController::getInstance();
 		// MySQLController init
 	MySQLController::getInstance();
 		//PortController init
@@ -29,6 +32,8 @@ int main() {
 
 	std::cerr << "start join....\n";
 	//
+	_tunnel_controller.monitor_tunnels();
+
 	if (thread_info_observer.joinable())
 		thread_info_observer.join();
 	if (thread_setting_observer.joinable())

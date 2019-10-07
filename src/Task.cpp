@@ -1,8 +1,8 @@
 #include "Task.hpp"
-#include "TCP_IP.hpp"
+#include "Tunnel.hpp"
 
-Task::Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string message, int timeout) :
-	tcp_ip(tcp_ip)
+Task::Task(std::string title, std::shared_ptr<Tunnel> tunnel, std::string message, int timeout) :
+	tunnel(tunnel)
 {
 	this->title = title;
 	this->message = message;
@@ -15,7 +15,7 @@ Task::Task(std::string title, std::shared_ptr<TCP_IP> tcp_ip, std::string messag
 }
 
 // Task::Task() :
-// 	tcp_ip(0)
+// 	tunnel(0)
 // {
 // 	this->status = eTaskStatus::ts_Created;
 // }
@@ -25,11 +25,11 @@ Task::~Task() {
 	//
 	// ss_error_log << "remove tesk: " << this << "\n";
 	// std::cerr << ss_error_log.str();
-	// this->tcp_ip = 0;
+	// this->tunnel = 0;
 }
 
 Task::Task(Task const & ref) :
-	tcp_ip(ref.tcp_ip)
+	tunnel(ref.tunnel)
 {
 	*this = ref;
 }
@@ -37,7 +37,7 @@ Task::Task(Task const & ref) :
 Task &Task::operator=(Task const & ref) {
 	this->title = ref.title;
 	this->message = ref.message;
-	this->tcp_ip = ref.tcp_ip;
+	this->tunnel = ref.tunnel;
 	this->status = ref.status;
 	this->timeout = ref.timeout;
 	this->answer_message = ref.answer_message;
@@ -49,28 +49,28 @@ void 		Task::operator()() {
 	std::cerr << "TASK START!\n";
 	this->status = ts_InProgres;
 	try {
-		if (!this->tcp_ip)
+		if (!this->tunnel)
 			throw std::exception();
-		std::lock_guard<std::mutex>	lock(this->tcp_ip->s_mutex);
-		if (!this->tcp_ip->is_available)
+		std::lock_guard<std::mutex>	lock(this->tunnel->s_mutex);
+		if (!this->tunnel->is_available)
 			throw std::exception();
-		// std::cerr << "start do task, memory addr tcp_ip:" << this->tcp_ip << ", title:" << title << "\n";
+		// std::cerr << "start do task, memory addr tunnel:" << this->tunnel << ", title:" << title << "\n";
 
 		std::cerr << "tcp was find\n";
-		// std::cerr << this->tcp_ip << " ==8\n";
-		this->tcp_ip->custom_write(message);
-		// std::cerr << this->tcp_ip << " ==8\n";
-		this->answer_message = this->tcp_ip->custom_read(this->timeout);
+		// std::cerr << this->tunnel << " ==8\n";
+		this->tunnel->t_write(message);
+		// std::cerr << this->tunnel << " ==8\n";
+		this->answer_message = this->tunnel->t_read(this->timeout);
 		if (!this->answer_message.size()) {
 			throw std::exception();
 		}
 		// std::cerr << this->answer_message << "*******************\n";
 	} catch (std::exception &e) {
-		if (this->tcp_ip) {
-			this->tcp_ip->custom_disconnect();
-			this->tcp_ip->is_available = false;
+		if (this->tunnel) {
+			// this->tunnel->custom_disconnect();
+			this->tunnel->is_available = false;
 		}
-		// this->tcp_ip = 0;
+		// this->tunnel = 0;
 		std::cerr << "TASK_FAIL_BROKEN_TCP_IP\n";
 		this->answer_message = TASK_FAIL_BROKEN_TCP_IP;
 	}

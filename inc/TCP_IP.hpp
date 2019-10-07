@@ -13,18 +13,18 @@ enum eTypeExceptionTCP_IP {
 class TCP_IP {
 public:
 
-	class CustomException: public std::exception
-	{
-		CustomException() throw();
-	public:
-		~CustomException() throw();
-		CustomException(eTypeExceptionTCP_IP exceptType) throw();
-		CustomException(CustomException const & ref) throw();
-		CustomException &operator=(CustomException const & ref) throw();
-
-	    // virtual const char		*what() const throw();
-		eTypeExceptionTCP_IP	type;
-	};
+	// class CustomException: public std::exception
+	// {
+	// 	CustomException() throw();
+	// public:
+	// 	~CustomException() throw();
+	// 	CustomException(eTypeExceptionTCP_IP exceptType) throw();
+	// 	CustomException(CustomException const & ref) throw();
+	// 	CustomException &operator=(CustomException const & ref) throw();
+	//
+	//     // virtual const char		*what() const throw();
+	// 	eTypeExceptionTCP_IP	type;
+	// };
 
 
 
@@ -36,14 +36,14 @@ public:
 	void 		custom_connect(std::string ip, int port);
 	std::string	custom_read(int timeout);
 	void 		custom_write(std::string message);
-	void 		custom_disconnect();
+	// void 		custom_disconnect();
 
 	int 		get_socket() const;
 	void 		fresh();
 
-	std::mutex 		s_mutex;
+	// std::mutex 		s_mutex;
 	std::string 	connected_mac;
-	bool 			is_available;
+	// bool 			is_available;
 
 private:
 	int 				_socket;
