@@ -46,13 +46,16 @@ Task &Task::operator=(Task const & ref) {
 
 
 void 		Task::operator()() {
-	std::cerr << "TASK START!\n";
+	std::stringstream 	ss;
+
+	ss << "TASK " << this->title << " START!\n";
+	std::cerr << ss.str();
 	this->status = ts_InProgres;
 	try {
 		if (!this->tunnel)
 			throw std::exception();
 		std::lock_guard<std::mutex>	lock(this->tunnel->s_mutex);
-		if (!this->tunnel->is_available)
+		if (!this->tunnel || !this->tunnel->is_available)
 			throw std::exception();
 		// std::cerr << "start do task, memory addr tunnel:" << this->tunnel << ", title:" << title << "\n";
 

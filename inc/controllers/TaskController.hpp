@@ -29,7 +29,7 @@ public:
 	std::shared_ptr<Task>	make_new_task(std::string title, std::shared_ptr<Tunnel> tunnel, std::string message, int timeout);
 private:
 	CustomThread	_pull_task[MAX_TASK];
-
+	std::mutex 		_pull_mutex[MAX_TASK];
 
 };
 

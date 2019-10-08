@@ -28,7 +28,11 @@ IObserver::~IObserver() {
 
 }
 
-
+// MARK : - _execute_list_request
+//	1) check new request in mysql (with help of _mysql_controller) and story tham to _list_untreated_request
+//	2) from request get imei and name_mesh for founding correct Mesh-network
+//		if find -> make new Task (_task_controller.make_task), and story tham in current request
+// 		if not find -> current request stay without Task (CAN_NOT_FIND_MESH)
 void 	IObserver::_execute_list_request(std::string message_for_task, eRequestType type_request, int timeout) {
 	if (!this->_list_untreated_request.size())
 		this->_refresh_untreated_list_request(type_request);

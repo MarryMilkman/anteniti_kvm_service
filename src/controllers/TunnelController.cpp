@@ -23,8 +23,11 @@ std::vector<std::shared_ptr<Tunnel>>	TunnelController::get_list_active_tunnel() 
 	std::vector<std::shared_ptr<Tunnel>> 	r_list;
 
 	for (auto item : this->_map_tunnel) {
-		if (item.second->is_available) {
-			r_list.push_back(item.second);
+		if (!item.second)
+			continue;
+		std::shared_ptr<Tunnel> &tunnel = item.second;
+		if (tunnel && tunnel->is_available) {
+			r_list.push_back(tunnel);
 		}
 	}
 	return r_list;
@@ -41,11 +44,14 @@ void 		TunnelController::_create_new_connection() {
 	std::vector<int> 		active_port = this->_get_active_port();
 
 	for (int port : active_port) {
-		if (this->_map_tunnel.count(port) || this->_map_tunnel[port])
-			continue;
-		try {
-			this->_map_tunnel[port] = this->_create_tunnel_on(port);
-		} catch (std::exception &e) {}
+		if (!this->_map_tunnel.count(port) || !this->_map_tunnel[port])
+			this->_map_tunnel[port] = std::shared_ptr<Tunnel>(new Tunnel(port));
+
+		// if (this->_map_tunnel.count(port) || this->_map_tunnel[port])
+		// 	continue;
+		// try {
+		// 	this->_map_tunnel[port] = this->_create_tunnel_on(port);
+		// } catch (std::exception &e) {}
 	}
 }
 
@@ -54,19 +60,15 @@ void 		TunnelController::_clean_list_tunnel() {
 		std::shared_ptr<Tunnel> 	&tunnel_ptr = item.second;
 		time_t 						now;
 
-		if (!tunnel_ptr || !tunnel_ptr->is_available) {
+		if (!tunnel_ptr) {
 			this->_map_tunnel.erase(item.first);
 			continue;
 		}
 		time(&now);
-		if ((now - tunnel_ptr->get_last_time_activity()) > 1100) {
-			int port = tunnel_ptr->port;
-
-			std::cerr << "hi!\n";
+		if (!tunnel_ptr->is_available || (now - tunnel_ptr->get_last_time_activity()) > 1100) {
 			tunnel_ptr->is_available = false;
-			tunnel_ptr = 0;
 			try {
-				tunnel_ptr = this->_create_tunnel_on(port);
+				tunnel_ptr->t_refresh_connection();
 			} catch (std::exception &e) {
 				tunnel_ptr = 0;
 			}
@@ -75,25 +77,6 @@ void 		TunnelController::_clean_list_tunnel() {
 }
 
 
-
-
-std::shared_ptr<Tunnel> 	TunnelController::_create_tunnel_on(int port) {
-	Tunnel 						*tunnel = new Tunnel(port);
-	std::string 				message = "Command\n***DELIM***\n" SEND_MAC;
-	int 						timeout = 2;
-	std::string 				answer;
-	std::lock_guard<std::mutex>	lock(tunnel->s_mutex);
-
-	tunnel->dest_mac = "";
-	tunnel->is_available = true;
-	tunnel->t_write(message);
-	answer = tunnel->t_read(timeout);
-	if (!answer.size() /*|| this->_is_answer_correct(answer)*/)
-		std::exception();
-	tunnel->dest_mac = answer;
-	tunnel->is_available = true;
-	return std::shared_ptr<Tunnel>(tunnel);
-}
 
 
 

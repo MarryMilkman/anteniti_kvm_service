@@ -41,6 +41,7 @@ Mesh 		&MeshController::get_mesh_by(std::string serial_number) {
 //			if found - story new mesh to _map_mesh and refresh this connection
 //			if not_found - make exception
 Mesh 		&MeshController::get_mesh_by(std::string imei, std::string name_mesh) {
+	std::cerr << "start get_mesh_by(std::string imei, std::string name_mesh)\n";
 	if (!imei.size() || !name_mesh.size())
 		throw std::exception();
 	if (!_map_mutex.count(imei)) {
@@ -69,6 +70,7 @@ void 		MeshController::_registered_new_mesh(std::string imei) {
 	for (Mesh &mesh : list_new_mesh) {
 		Mesh &old_mesh = this->_map_mesh[imei][mesh.name];
 		if (!(old_mesh == mesh)) {
+			std::cerr << "Salom!\n";
 			mesh.refresh_connection();
 			this->_map_mesh[imei][mesh.name] = mesh;
 		}

@@ -25,11 +25,17 @@ std::shared_ptr<Task>	TaskController::make_new_task(std::string title, std::shar
 	// this->_refresh_pull();
 	while (i < MAX_TASK) {
 		if (!this->_pull_task[i].task_ptr || this->_pull_task[i].task_ptr->status == eTaskStatus::ts_Used) {
+			std::unique_lock<std::mutex> 	un_lock(this->_pull_mutex[i], std::try_to_lock);
+
+			if (!un_lock.owns_lock()) {
+				i++;
+				continue;
+			}
 			this->_pull_task[i] = TaskController::CustomThread();
 			this->_pull_task[i].task_ptr = std::shared_ptr<Task>(new Task(title, tunnel, message, timeout));
 			this->_pull_task[i].thread_ = std::thread(std::ref(*this->_pull_task[i].task_ptr.get()));
 			this->_pull_task[i].thread_.detach();
-			std::cerr << "TsakController return " << i << " thread from puul\n";
+			std::cerr << "TsakController return " << i << " thread from pull\n";
 			return this->_pull_task[i].task_ptr;
 		}
 		i++;

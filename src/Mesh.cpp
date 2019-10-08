@@ -60,7 +60,7 @@ void		Mesh::refresh_connection() {
 		if (tunnel->is_available) {
 			for (std::string sn_mesh : this->list_serial_number) {
 				if (tunnel->dest_mac == sn_mesh) {
-					std::cerr << sn_mesh << " - find mesh\n";
+					std::cerr << sn_mesh << " - find connected mesh (Mesh::refresh_connection)\n";
 					this->tunnel = tunnel;
 					return;
 				}

@@ -1,6 +1,22 @@
 #ifndef LIB_H
 #define LIB_H
 
+
+/*
+	function with exception:
+MeshController::get_mesh_by (both)
+Parser::SSHTunnel::get_serial_number_from_authorization
+TCP_IP::custom_connect
+TCP_IP::custom_read
+TCP_IP::custom_write
+TCP_IP::_init
+Tunnel::t_refresh_connection
+Tunnel::t_read
+Tunnel::t_write
+
+*/
+
+
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>

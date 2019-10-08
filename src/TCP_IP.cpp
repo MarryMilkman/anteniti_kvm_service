@@ -15,7 +15,7 @@ TCP_IP::~TCP_IP() {
 	std::stringstream	ss;
 
 	PortController::getInstance().unreserv_port(this->_port);
-	ss << this << " Delete tcp_ip\n";
+	ss << this << " Delete tcp_ip ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\\n";
 	std::cerr << ss.str();
 	this->fresh();
 }
@@ -33,11 +33,11 @@ TCP_IP	&TCP_IP::operator=(TCP_IP const & ref) {
 	// connect
 void 		TCP_IP::custom_connect(std::string ip, int port) {
 	this->_port = port;
-	// std::stringstream	ss;
+	std::stringstream	ss;
 	// eLockStatus 		lock_status;
-	//
-	// ss << this << " ..................connect..................\n";
-	// std::cerr << ss.str();
+
+	ss << this << " ..................connect..................\n";
+	std::cerr << ss.str();
 
 	this->_init(ip, port);
 	fd_set          readfds;
@@ -176,7 +176,7 @@ int 		TCP_IP::get_socket() const {
 
 		// throw std::exception();
 
-// 
+//
 //
 // TCP_IP::CustomException::CustomException() throw()
 // {
