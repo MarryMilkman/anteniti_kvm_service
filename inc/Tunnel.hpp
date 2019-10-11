@@ -19,7 +19,8 @@ public:
 
 	time_t 		get_last_time_activity() const;
 
-	std::mutex 	s_mutex;
+	std::mutex 	rw_mutex;
+	std::mutex 	connect_mutex;
 	bool 		is_available;
 	std::string dest_mac;
 

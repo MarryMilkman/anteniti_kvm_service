@@ -51,6 +51,12 @@ void		Mesh::refresh_connection() {
 	}
 	if (!this->list_serial_number.size())
 		return ;
+	if (this->tunnel) {
+		if (this->_refresh_self_tunnel())
+			return;
+	}
+
+
 	std::vector<std::shared_ptr<Tunnel>>	list_active_tunnel = TunnelController::getInstance().get_list_active_tunnel();
 
 	this->tunnel = 0;
@@ -65,6 +71,26 @@ void		Mesh::refresh_connection() {
 					return;
 				}
 			}
+		}
+	}
+}
+
+bool 		Mesh::_refresh_self_tunnel() {
+	if (!this->tunnel)
+		return false;
+	try {
+		this->tunnel->t_refresh_connection();
+	} catch (std::exception &e) {
+		return false;
+	}
+	std::string 	tunnel_dest_mac = this->tunnel->dest_mac;
+	if (!tunnel_dest_mac.size())
+		return false;
+	for (std::string sn_mesh : this->list_serial_number) {
+		if (this->tunnel->dest_mac == tunnel_dest_mac) {
+			// std::cerr << tunnel_dest_mac << " - find connected mesh (Mesh::refresh_connection)\n";
+			// this->tunnel = tunnel;
+			return true;
 		}
 	}
 }

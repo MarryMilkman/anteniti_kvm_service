@@ -27,6 +27,9 @@ public:
 private:
 	std::mutex 					_refresh_connection_mutex;
 
+	bool 						_refresh_self_tunnel();
+
+
 };
 
 #endif

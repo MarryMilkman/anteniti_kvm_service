@@ -116,12 +116,14 @@ void 	IObserver::_check_untreated_list_request() {
 				try {
 
 					Mesh 	&incorrect_mesh = this->_mesh_controller.get_mesh_by(answer_segment[1]);
-					{
-						std::cerr << "ATENTION! cen be segmentation prikol\n";
-						std::lock_guard<std::mutex>		lock(incorrect_mesh.tunnel->s_mutex);
-						incorrect_mesh.tunnel->is_available = false;
-						incorrect_mesh.tunnel = 0;
-					}
+					incorrect_mesh.refresh_connection();
+					// {
+					// 	std::cerr << "ATENTION! cen be segmentation prikol\n";
+					// 	std::lock_guard<std::mutex>		lock(incorrect_mesh.tunnel->s_mutex);
+					// 	incorrect_mesh.tunnel->is_available = false;
+					//
+					// 	incorrect_mesh.tunnel->t_refresh_connection();
+					// }
 					Mesh 	&mesh = this->_mesh_controller.get_mesh_by(request.mysql_data->imei, request.mysql_data->name_mesh);
 					mesh.refresh_connection();
 

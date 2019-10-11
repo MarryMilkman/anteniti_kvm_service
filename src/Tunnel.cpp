@@ -37,6 +37,14 @@ Tunnel &Tunnel::operator=(Tunnel const &ref) {
 }
 
 void 			Tunnel::t_refresh_connection() {
+	std::unique_lock<std::mutex> lock(this->connect_mutex, std::try_to_lock);
+
+	if (!lock.owns_lock()) {
+		std::lock_guard<std::mutex> llock(this->connect_mutex);
+		return ;
+	}
+
+
 	if (!this->_tcp_ip)
 		this->_tcp_ip = new TCP_IP;
 	else
@@ -60,7 +68,7 @@ bool 			Tunnel::_find_dest_mesh() {
 	std::string 				message = "Command\n***DELIM***\n" SEND_MAC;
 	int 						timeout = 2;
 	std::string 				answer;
-	std::lock_guard<std::mutex>	lock(this->s_mutex);
+	std::lock_guard<std::mutex>	lock(this->rw_mutex);
 
 	this->dest_mac = "";
 	this->is_available = true;
