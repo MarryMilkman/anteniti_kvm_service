@@ -51,43 +51,43 @@ enum eRequestType {
 	// rt_NewRoutersRequest
 };
 
-#define INCORRECT_ADDRESSEE "Incorrect_addressee"
+#define INCORRECT_ADDRESSEE "incorrect_addressee"
 
 #define PATH_VARIABLE_SETTING "/tmp/new_setting"
 
 // define for comunicate:
-#define CAN_NOT_FIND_MESH "Can_not_find_mesh"
+#define CAN_NOT_FIND_MESH "can_not_find_mesh"
 
-#define BLOCKLIST_CHANGE "Block_list_changed"
+#define BLOCKLIST_CHANGE "block_list_changed"
 
-#define SERVER_MOD_LOCK "Server_mod_lock"
-#define SERVER_MOD_FREE "Server_mod_free"
+#define SERVER_MOD_LOCK "server_mod_lock"
+#define SERVER_MOD_FREE "server_mod_free"
 
-#define SEND_MAC "Send_mac"
-#define SEND_INFO "Send_info"
-#define SEND_SETTING_VERSION "Send_setting_version"
+#define SEND_MAC "send_mac"
+#define SEND_INFO "send_info"
+#define SEND_SETTING_VERSION "send_setting_version"
 
-# define SETTING_CHANGED "Setting_changed"
+# define SETTING_CHANGED "setting_changed"
 
-#define SETTING_DELIVERED "Setting_delivered"
-#define SETTING_NOT_DELIVERED "Setting_not_delivered"
+#define SETTING_DELIVERED "setting_delivered"
+#define SETTING_NOT_DELIVERED "setting_not_delivered"
 
-#define SETTING_APPLY "Apply_setting"
+#define SETTING_APPLY "apply_setting"
 
-#define SETTING_APPLYED "Setting_applyed"
-#define SETTING_NOT_APPLYED "Setting_not_applyed"
+#define SETTING_APPLYED "setting_applyed"
+#define SETTING_NOT_APPLYED "setting_not_applyed"
 
-#define SETTING_ROOL_BACK "Setting_rool_back"
+#define SETTING_ROOL_BACK "setting_rool_back"
 
 
 #define WAN_CHENGED "60"
 #define WAN_DETECT "61"
 
-#define ROUNER_NOT_AVAILABLE "Router_is_not_available"
+#define ROUNER_NOT_AVAILABLE "router_is_not_available"
 
-#define KEY_WAS_CHANGED "Key_was_changed"
-#define KEY_WAS_RESEIVED "Key_was_delivered"
+#define KEY_WAS_CHANGED "key_was_changed"
+#define KEY_WAS_RESEIVED "key_was_delivered"
 
-#define SETTING_SAVE "Setting_save"
+#define SETTING_SAVE "setting_save"
 
 #endif
