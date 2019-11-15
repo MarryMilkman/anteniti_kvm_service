@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 3.5.1)
 
 project(MyProject)
 
-add_subdirectory(curl-7.65.3)
+#add_subdirectory(curl-7.65.3)
 
 set(MYSQL_CONCPP_DIR "/home/user/Public/anteniti_kvm_service/mysql-connector-cpp-8.0.17")
 
-link_libraries(libcurl ${MYSQL_CONCPP_DIR}/lib64/libmysqlcppconn.so)
+link_libraries(${MYSQL_CONCPP_DIR}/lib64/libmysqlcppconn.so)
+
+#libcurl
 
 set(PROJECT_LINK_LIBS
 	libmysqlcppconn.so)
@@ -23,7 +25,7 @@ set(SRC_DIRECTORY "./src")
 
 SET(CMAKE_CXX_COMPILER g++-5)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -Wall -Wextra -g")
 
 
 set(SRC
