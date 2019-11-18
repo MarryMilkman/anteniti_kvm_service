@@ -1,4 +1,4 @@
 url 	mesh.mysql.ukraine.com.ua
-user	mesh_vanya
-pass	Vanya9379992
+user	mesh_van
+pass	test_mesh
 name_db	mesh_router
