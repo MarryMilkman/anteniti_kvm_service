@@ -77,6 +77,8 @@ bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment
 	std::stringstream 	ss_sql_requeset;
 
 	std::cerr << "Story start....\n";
+	if (!data_segment)
+		return false;
 	if (!this->_connector || !this->_statement) {
 		this->_init_connection();
 		if (!data_segment || !this->_statement)
@@ -86,22 +88,18 @@ bool 							MySQLController::story(std::shared_ptr<MySQLDataSegment>data_segment
 					<< data_segment->answer_message << "\' WHERE ID = \'" << data_segment->id << "\'";
 	// this->_remove_from_list_request(data_segment);
 	// std::cerr << ss_sql_requeset.str() << "\n";
-	if (data_segment) {
-		// std::cerr << "delete data_segment in MySQLController  MySQLController::story\n";
-
-		data_segment = 0;
-	}
 	{
 		std::lock_guard<std::mutex> execut_lock(this->_mutex_for_execute);
 		try {
 			this->_statement->execute(ss_sql_requeset.str());
+			std::cerr << "Story proshel gladko....\n";
 		} catch (sql::SQLException &e) {
 			std::cerr << e.what() << "\ncode error: " << e.getErrorCode() << "\n";
 			if (e.getErrorCode() == 2006)
 				this->_init_connection();
+			return false;
 		}
 	}
-	std::cerr << "Story proshel gladko....\n";
 	return true;
 }
 
@@ -129,6 +127,13 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::get_request(eReq
 	//	and in any case (return_list.size) return r_list;
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_info() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
+	static time_t	last_use = time(0);
+	time_t 			now = 0;
+
+	time(&now);
+	if (last_use >= now)
+		return r_list;
+	time(&last_use);
 
 	for (int i = 0, size = this->_list_request_info.size(); i < size;) {
 		std::shared_ptr<MySQLDataSegment>	ms_data = this->_list_request_info[i];
@@ -164,6 +169,13 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_inf
 	// same as _get_request_info, bat hear we loking for _list_request_block
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_block() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
+	static time_t	last_use = time(0);
+	time_t 			now = 0;
+
+	time(&now);
+	if (last_use >= now)
+		return r_list;
+	time(&last_use);
 
 	for (int i = 0, size = this->_list_request_block.size(); i < size;) {
 		std::shared_ptr<MySQLDataSegment>	ms_data = this->_list_request_block[i];
@@ -200,6 +212,13 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_blo
 	// same as _get_request_info, bat hear we loking for _list_request_setting
 std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_setting() {
 	std::vector<std::shared_ptr<MySQLDataSegment>>	r_list;
+	static time_t	last_use = time(0);
+	time_t 			now = 0;
+
+	time(&now);
+	if (last_use >= now)
+		return r_list;
+	time(&last_use);
 
 	for (int i = 0, size = this->_list_request_setting.size(); i < size;) {
 		std::shared_ptr<MySQLDataSegment>	ms_data = this->_list_request_setting[i];
@@ -234,7 +253,7 @@ std::vector<std::shared_ptr<MySQLDataSegment>>	MySQLController::_get_request_set
 
 // update all request from db. if have some new request with type == question -> return true
 bool			MySQLController::_update_all_list(eRequestType question) {
-	bool 				q = false;
+	bool 				is_new_request = false;
 	std::vector<int>	list_id;
 	// int 				max_id = -1;
 	std::stringstream 	ss_sql_requeset;
@@ -272,19 +291,19 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 				list_id.push_back(data_segment->id);
 			if (s_type == "setting") {
 				if (question == rt_SettingRequest)
-				q = true;
+				is_new_request = true;
 				data_segment->type = rt_SettingRequest;
 				this->_list_request_setting.push_back(data_segment);
 			}
 			else if (s_type == "info") {
 				if (question == rt_InfoRequest)
-				q = true;
+				is_new_request = true;
 				data_segment->type = rt_InfoRequest;
 				this->_list_request_info.push_back(data_segment);
 			}
 			else if (s_type == "block") {
 				if (question == rt_BlockRequest)
-				q = true;
+				is_new_request = true;
 				data_segment->type = rt_BlockRequest;
 				this->_list_request_block.push_back(data_segment);
 			}
@@ -318,7 +337,7 @@ bool			MySQLController::_update_all_list(eRequestType question) {
 		if (e.getErrorCode() == 2006)
 			this->_init_connection();
 	}
-	return q;
+	return is_new_request;
 }
 
 

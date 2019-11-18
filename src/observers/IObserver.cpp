@@ -97,8 +97,8 @@ void 	IObserver::_check_untreated_list_request() {
 			}
 			std::cerr << "------------ATANTION! no task for request (CAN_NOT_FIND_MESH)-----------------\n";
 			request.mysql_data->answer_message = CAN_NOT_FIND_MESH;
-			request.mysql_data->status = eRequestStatus::rs_Finish;
 			this->_mysql_controller.story(request.mysql_data);
+			request.mysql_data->status = eRequestStatus::rs_Finish;
 			// request.task_ptr = this->_task_controller.make_new_task(request.itle, mesh.tunnel, request.message);
 			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
 			size = this->_list_untreated_request.size();
@@ -155,9 +155,9 @@ void 	IObserver::_check_untreated_list_request() {
 				} catch (std::exception &e) {}
 			}
 			request.mysql_data->answer_message = request.task_ptr->answer_message;
-			request.mysql_data->status = eRequestStatus::rs_Finish;
 			request.task_ptr->status = eTaskStatus::ts_Used;
 			this->_mysql_controller.story(request.mysql_data);
+			request.mysql_data->status = eRequestStatus::rs_Finish;
 			this->_list_untreated_request.erase(this->_list_untreated_request.begin() + i);
 			size = this->_list_untreated_request.size();
 			continue;
