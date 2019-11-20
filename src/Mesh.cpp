@@ -93,4 +93,5 @@ bool 		Mesh::_refresh_self_tunnel() {
 			return true;
 		}
 	}
+	return false;
 }

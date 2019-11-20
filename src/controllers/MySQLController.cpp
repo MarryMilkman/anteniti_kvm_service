@@ -8,8 +8,8 @@ MySQLController::MySQLController() :
 	this->_statement = 0;
 	this->_driver = get_driver_instance();
 	this->_init_connection();
-	std::cerr << this->_connector << "\n";
-	std::cerr << this->_statement << "\n";
+	// while(1);
+	// exit(0);
 }
 
 MySQLController::~MySQLController() {
@@ -59,9 +59,13 @@ void 	MySQLController::_init_connection() {
 			if (word == "name_db")
 				file >> this->_name_db;
 		}
+		sql::ConnectOptionsMap connection_properties;
 
-		this->_connector = this->_driver->connect(this->_url, this->_user, this->_pass);
-		this->_connector->setSchema(this->_name_db);
+		connection_properties["hostName"] = this->_url;
+		connection_properties["userName"] = this->_user;
+		connection_properties["password"] = this->_pass;
+		connection_properties["schema"] = this->_name_db;
+		this->_connector = this->_driver->connect(connection_properties);
 		this->_statement = this->_connector->createStatement();
 	}
 	catch (sql::SQLException &e) {

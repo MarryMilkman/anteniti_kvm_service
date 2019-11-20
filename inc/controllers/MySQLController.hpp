@@ -6,11 +6,6 @@
 
 #define MYSQL_CONFIG "../mysql_config.txt"
 
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-
 class MySQLDataSegment;
 
 enum eRequestStatus {
@@ -44,7 +39,6 @@ private:
 	std::string 			_pass;
 	std::string 			_name_db;
 
-	// mysqlx::Session 		*_session;
 	Loger 					_loger;
 	std::mutex 				_mutex;
 	std::mutex 				_mutex_for_execute;

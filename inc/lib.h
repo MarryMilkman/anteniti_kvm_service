@@ -38,6 +38,11 @@ Tunnel::t_write
 #include <chrono>
 #include <fcntl.h>
 
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+
 //#include <curl/curl.h>
 
 // std::vector<std::string>    custom_split(std::string str, std::string delim);
